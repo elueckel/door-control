@@ -1,0 +1,12 @@
+{
+    "id": "{A5CE2322-8EFB-850C-1EDF-0A9B9D22902F}",
+    "name": "Garage Door",
+    "type": 3,
+    "vendor": "",
+    "aliases": [],
+    "parentRequirements": [],
+    "childRequirements": [],
+    "implemented": [],
+    "prefix": "GD",
+    "url": ""
+}

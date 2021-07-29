@@ -1,0 +1,130 @@
+{
+    "elements": [
+        {
+           "type": "Label",
+            "label": "Garage Door Controller Configuration" 
+        },
+        {
+            "type": "CheckBox",
+            "name": "Active",
+            "caption": "Active"
+        },
+        {
+            "type": "SelectVariable",
+            "name": "GarageDoorVariable",
+            "caption": "Target"
+        },
+        {
+            "type": "SelectVariable",
+            "name": "GarageDoorSensor",
+            "caption": "Door Sensor"
+        },
+        {
+            "type": "CheckBox",
+            "name": "WriteToLog",
+            "caption": "Write status to log"
+        },
+        {
+            "type": "ExpansionPanel",
+            "caption": "Ventilation",
+            "items": [
+                {
+                    "type": "Label",
+                    "label": "Configuration for automatic closing of garage door"
+                },
+                {
+                    "type": "CheckBox",
+                    "name": "VentilationActive",
+                    "caption": "Active"
+                },
+                {
+                    "type": "NumberSpinner",
+                    "name": "VentilationHumidityThreshold",
+                    "caption": "Timeframe for autoclose",
+                    "suffix": "minutes"
+                },
+                {
+                    "type": "SelectTime",
+                    "name": "VentilationTimeStart",
+                    "caption": "Start"
+                },
+                {
+                    "type": "SelectTime",
+                    "name": "VentilationTimeStop",
+                    "caption": "Stop"
+                }
+
+            ]
+        },
+        {
+            "type": "ExpansionPanel",
+            "caption": "Auto Close",
+            "items": [
+                {
+                    "type": "Label",
+                    "label": "Configuration for automatic closing of garage door"
+                },
+                {
+                    "type": "CheckBox",
+                    "name": "AutoCloseActive",
+                    "caption": "Active"
+                },
+                {
+                    "type": "NumberSpinner",
+                    "name": "AutoCloseTimer",
+                    "caption": "Timeframe for autoclose",
+                    "suffix": "minutes"
+                }
+            ]
+        },
+        {
+            "type": "ExpansionPanel",
+            "caption": "Notifications",
+            "items": [
+                {
+                    "type": "Label",
+                    "label": "Basic messaging communication"
+                },
+                {
+                    "type": "Label",
+                    "label": "Please select an instance which should be used to send emails"
+                },
+                {
+                    "type": "SelectInstance",
+                    "name": "EmailVariable",
+                    "caption": "Email Configuration"
+                },
+                {
+                    "type": "Label",
+                    "label": "App Notifications are send via the standard webfront"
+                },
+                {
+                    "type": "CheckBox",
+                    "name": "NotifyByApp",
+                    "caption": "Notify in Symcon Mobile"
+                },
+                {
+                    "type": "CheckBox",
+                    "name": "NotifyByEmail",
+                    "caption": "Notify by Email"
+                },
+                {
+                    "type": "Label",
+                    "label": "------------------------------------------------------------------------------"
+                },
+                {
+                    "type": "Label",
+                    "label": "Settings for messages"
+                },
+                {
+                    "type": "CheckBox",
+                    "name": "Status",
+                    "caption": "Status Message"
+                }
+                
+            ]
+        }
+    ],
+    "actions": [],
+    "status": []
+}
