@@ -19,7 +19,7 @@
             "name": "ReverseTimer",
             "caption": "Reverse Timer",
             "suffix": "seconds"
-        }
+        },
         {
             "type": "SelectVariable",
             "name": "GarageDoorSensor",
