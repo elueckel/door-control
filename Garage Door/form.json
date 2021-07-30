@@ -15,6 +15,12 @@
             "caption": "Target"
         },
         {
+            "type": "NumberSpinner",
+            "name": "ReverseTimer",
+            "caption": "Reverse Timer",
+            "suffix": "seconds"
+        }
+        {
             "type": "SelectVariable",
             "name": "GarageDoorSensor",
             "caption": "Door Sensor"
@@ -23,6 +29,20 @@
             "type": "CheckBox",
             "name": "WriteToLog",
             "caption": "Write status to log"
+        },
+        {
+            "type": "Label",
+            "label": "Create Specific Open/Close Variables"
+        },
+        {
+            "type": "CheckBox",
+            "name": "CloseVariable",
+            "caption": "Close Variable"
+        },
+        {
+            "type": "CheckBox",
+            "name": "OpenVariable",
+            "caption": "Open Variable"
         },
         {
             "type": "ExpansionPanel",
