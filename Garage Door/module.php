@@ -19,13 +19,24 @@ if (!defined('vtBoolean')) {
 			//Never delete this line!
 			parent::Create();
 
-			$this->RegisterPropertyString("IP","");
-			$this->RegisterPropertyBoolean("System_Messages", 0);
-			$this->RegisterPropertyInteger("Timer", "60");
-			$this->RegisterPropertyInteger("System_BatteryThreshold", "15");
+			//$this->RegisterPropertyString("IP","");
+			$this->RegisterPropertyBoolean("Active", 0);
+			$this->RegisterPropertyInteger("GarageDoorVariable", "60");
+			$this->RegisterPropertyInteger("GarageDoorSensor", "60");
+			$this->RegisterPropertyBoolean("WriteToLog", 0);
+			$this->RegisterPropertyBoolean("CloseVariable", 0);
+			$this->RegisterPropertyBoolean("OpenVariable", 0);
 
-			$this->RegisterTimer("WLAN BBQ Thermometer",0,"WT_CyclicTask(\$_IPS['TARGET']);");
+			$this->RegisterPropertyBoolean("VentilationActive", 0);
+			$this->RegisterPropertyInteger("VentilationHumidityThreshold", "15");
+			$this->RegisterPropertyInteger("VentilationTimeStart", "15");
+			$this->RegisterPropertyInteger("VentilationTimeStop", "15");
 
+			$this->RegisterPropertyBoolean("AutoCloseActive", 0);
+			$this->RegisterPropertyInteger("AutoCloseTimer", 0);
+			
+			$this->RegisterTimer("Garage Door Ventilation",0,"GD_Ventilation(\$_IPS['TARGET']);");
+			$this->RegisterTimer("Garage Door Auto Close",0,"GD_AutoClose(\$_IPS['TARGET']);");
 
 		}
 
@@ -35,34 +46,70 @@ if (!defined('vtBoolean')) {
 			parent::Destroy();
 		}
 
-		public function ApplyChanges()
-		{
+		public function ApplyChanges() {
 			//Never delete this line!
 			parent::ApplyChanges();
 
-			$this->MaintainVariable('CoreTemp_Pork', $this->Translate('Core Temperature Pork'), vtString, 'WT.CoreTemp_Pork', $vpos++,$this->ReadPropertyBoolean('CoreTemp') == 1);
-			$this->MaintainVariable('CoreTemp_Beef', $this->Translate('Core Temperature Beef'), vtString, 'WT.CoreTemp_Beef', $vpos++,$this->ReadPropertyBoolean('CoreTemp') == 1);
-			$this->MaintainVariable('CoreTemp_Calf', $this->Translate('Core Temperature Calf'), vtString, 'WT.CoreTemp_Calf', $vpos++,$this->ReadPropertyBoolean('CoreTemp') == 1);
-
+			$vpos = 100;
+			$this->MaintainVariable('CloseDoor', $this->Translate('Close Door'), vtString, '', $vpos++,$this->ReadPropertyBoolean('CloseVariable') == 1);
+			$this->MaintainVariable('OpenDoor', $this->Translate('Open Door'), vtString, '', $vpos++,$this->ReadPropertyBoolean('OpenVariable') == 1);
+			
 			//$TimerMS = $this->ReadPropertyInteger("Timer") * 1000;
 			//$this->SetTimerInterval("WLAN BBQ Thermometer",$TimerMS);
 
-			if ($this->ReadPropertyBoolean('CoreTemp') == 1) {
-				$this->EnableAction("CoreTemp_Pork");
-				$this->EnableAction("CoreTemp_Beef");
-				$this->EnableAction("CoreTemp_Calf");
-				$this->EnableAction("CoreTemp_Chicken");
-				$this->EnableAction("CoreTemp_Venison");
-				$this->EnableAction("CoreTemp_Lamb");
-				$this->EnableAction("CoreTemp_Fish");
+			if ($this->ReadPropertyBoolean('CloseVariable') == 1) {
+				$this->EnableAction("CloseDoor");
 			}
+			if ($this->ReadPropertyBoolean('OpenVariable') == 1) {
+				$this->EnableAction("OpenDoor");
+			} 
+				
+		}
+
+		public function MessageSink($TimeStamp, $SenderID, $Message, $Data)	{
+		
+		//$this->SendDebug("Sender",$SenderID." ".$Message." ".$Data, 0);
+
+			if ($SenderID == $this->GetIDForIdent('Active')) {
+				
+				$SenderValue = GetValue($SenderID);
+				if ($SenderValue == 1) {
+					$this->SendDebug("System","Module activated", 0);
+					$TimerMS = $this->ReadPropertyInteger("Timer") * 1000;
+					$this->SetTimerInterval("WLAN BBQ Thermometer",$TimerMS);
+					$this->SetBuffer("UnreachCounter",0);
+					$this->GetReadings();
+				}
+				else {
+					$this->SetTimerInterval("WLAN BBQ Thermometer", "0");
+					$this->ArchiveCleaning();
+					$this->UnsetValuesAtShutdown();
+					$this->SendDebug("System","Switching module off", 0);
+				}
+			}
+			else {
+				
+			}
+			
+
+		}
+
+
+		public function DoorController() {
+
+			//hole wer einen Befehl geschickt hat
+			//prüfe aktuellen Status
+			//prüfe rückkehr
+
+
+
 		}
 
 
 
 
 		public function NotifyApp() {
-			$NotifierTitle = "BBQ Thermometer";
+			$NotifierTitle = "Garage";
 			$NotifierMessage = $this->GetBuffer("NotifierMessage");
 			if ($NotifierMessage == "") {
 				$NotifierMessage = "Test Message";
@@ -77,7 +124,7 @@ if (!defined('vtBoolean')) {
 			$EmailVariable = $this->ReadPropertyInteger("EmailVariable"); 
 			if ($EmailVariable != "") {	
 				$NotifierMessage = $this->GetBuffer("NotifierMessage");
-				$EmailTitle = "BBQ Thermometer";
+				$EmailTitle = "Garage";
 				if ($NotifierMessage == "") {
 					$NotifierMessage = "Test Message";
 				}
