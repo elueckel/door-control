@@ -101,18 +101,19 @@ if (!defined('vtBoolean')) {
 		
 			$this->SendDebug("Sender",$SenderID." ".$Message." ".$Data, 0);
 
-			if ($SenderID == $this->GetIDForIdent('CloseVariable')) {
+			if ($SenderID == $this->GetIDForIdent('CloseDoor')) {
 
 				$this-SetBuffer('DoorTargetPosition',1);
-				$this->DoorController();
 				SetValue($SenderID,0); // Taster Emulieren
+				$this->DoorController();
+				
 			}
 
-			if ($SenderID == $this->GetIDForIdent('OpenVariable')) {
+			if ($SenderID == $this->GetIDForIdent('OpenDoor')) {
 
 				$this-SetBuffer('DoorTargetPosition',0);
-				$this->DoorController();
 				SetValue($SenderID,0); // Taster Emulieren
+				$this->DoorController();
 				
 			}
 
