@@ -50,7 +50,8 @@ if (!defined('vtBoolean')) {
 			$i = 10;
 
 			$this->RegisterVariableInteger('DoorSwitch', $this->Translate('Door Switch'),"~ShutterMoveStop", $i++);	
-			$this->RegisterVariableInteger('DoorStatus', $this->Translate('Door Status'),"GD.DoorStatus", $i++);	
+			$this->RegisterVariableInteger('DoorStatus', $this->Translate('Door Status'),"GD.DoorStatus", $i++);
+			$this->EnableAction("DoorSwitch");	
 
 		}
 
@@ -71,7 +72,6 @@ if (!defined('vtBoolean')) {
 			//$TimerMS = $this->ReadPropertyInteger("Timer") * 1000;
 			//$this->SetTimerInterval("WLAN BBQ Thermometer",$TimerMS);
 
-			$this->EnableAction("DoorStatus");
 
 			if ($this->ReadPropertyBoolean('CloseVariable') == 1) {
 				$this->EnableAction("CloseDoor");
@@ -100,14 +100,14 @@ if (!defined('vtBoolean')) {
 				SetValue($SenderID,0); // Taster Emulieren
 				
 			}
-/*
-			if ($SenderID == $this->GetIDForIdent('DoorStatus')) {
+
+			if ($SenderID == $this->GetIDForIdent('DoorSwitch')) {
 				
 				$CurrentStatus = GetValue($SenderID);
 				$this-SetBuffer('Doorstatus',$CurrentStatus);
 
 			}
-*/			
+		
 
 		}
 
