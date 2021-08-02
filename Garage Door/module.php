@@ -48,9 +48,9 @@ if (!defined('vtBoolean')) {
 			$this->RegisterTimer("Garage Door Auto Close",0,"GD_AutoClose(\$_IPS['TARGET']);");
 
 			$i = 10;
-			
+
 			$this->RegisterVariableInteger('DoorSwitch', $this->Translate('Door Switch'),"~ShutterMoveStop", $i++);	
-			$this->RegisterVariableInteger('DoorStatus', $this->Translate('Door Status'),"~GD.DoorStatus", $i++);	
+			$this->RegisterVariableInteger('DoorStatus', $this->Translate('Door Status'),"GD.DoorStatus", $i++);	
 
 		}
 
