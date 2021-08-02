@@ -92,7 +92,7 @@ if (!defined('vtBoolean')) {
 
 			$DoorSwitchID = @IPS_GetObjectIDByIdent('DoorSwitch', $this->InstanceID);
 			if (IPS_GetObject($DoorSwitchID)['ObjectType'] == 2) {
-					$this->RegisterMessage($DoorSwitch, VM_UPDATE);
+					$this->RegisterMessage($DoorSwitchID, VM_UPDATE);
 			}
 				
 		}
