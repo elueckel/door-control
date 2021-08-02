@@ -103,7 +103,7 @@ if (!defined('vtBoolean')) {
 
 			if ($SenderID == $this->GetIDForIdent('CloseDoor')) {
 
-				$this-SetBuffer('DoorTargetPosition',1);
+				$this-SetBuffer('DoorTargetPosition','1');
 				SetValue($SenderID,0); // Taster Emulieren
 				$this->DoorController();
 				
@@ -111,7 +111,7 @@ if (!defined('vtBoolean')) {
 
 			if ($SenderID == $this->GetIDForIdent('OpenDoor')) {
 
-				$this-SetBuffer('DoorTargetPosition',0);
+				$this-SetBuffer('DoorTargetPosition','0');
 				SetValue($SenderID,0); // Taster Emulieren
 				$this->DoorController();
 				
