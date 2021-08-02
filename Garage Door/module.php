@@ -80,15 +80,18 @@ if (!defined('vtBoolean')) {
 				$this->EnableAction("OpenDoor");
 			}
 
-			if (IPS_GetObject('CloseVariable')['ObjectType'] == 2) {
+			$CloseVariable= @IPS_GetObjectIDByIdent('CloseVariable', $this->InstanceID);	
+			if (IPS_GetObject($CloseVariable)['ObjectType'] == 2) {
 					$this->RegisterMessage('CloseVariable', VM_UPDATE);
 			}
 
-			if (IPS_GetObject('OpenVariable')['ObjectType'] == 2) {
+			$OpenVariable= @IPS_GetObjectIDByIdent('OpenVariable', $this->InstanceID);
+			if (IPS_GetObject($OpenVariable)['ObjectType'] == 2) {
 					$this->RegisterMessage('OpenVariable', VM_UPDATE);
 			}
 
-			if (IPS_GetObject('DoorSwitch')['ObjectType'] == 2) {
+			$DoorSwitch= @IPS_GetObjectIDByIdent('DoorSwitch', $this->InstanceID);
+			if (IPS_GetObject($DoorSwitch)['ObjectType'] == 2) {
 					$this->RegisterMessage('DoorSwitch', VM_UPDATE);
 			}
 				
