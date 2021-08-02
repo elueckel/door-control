@@ -79,10 +79,22 @@ if (!defined('vtBoolean')) {
 			if ($this->ReadPropertyBoolean('OpenVariable') == 1) {
 				$this->EnableAction("OpenDoor");
 			}
+
+			if (IPS_GetObject('CloseVariable')['ObjectType'] == 2) {
+					$this->RegisterMessage('CloseVariable', VM_UPDATE);
+			}
+
+			if (IPS_GetObject('OpenVariable')['ObjectType'] == 2) {
+					$this->RegisterMessage('OpenVariable', VM_UPDATE);
+			}
+
+			if (IPS_GetObject('DoorSwitch')['ObjectType'] == 2) {
+					$this->RegisterMessage('DoorSwitch', VM_UPDATE);
+			}
 				
 		}
 
-		public function MessageSink($TimeStamp, $SenderID, $Message, $Data)	{
+		public function MessageSink($TimeStamp, $SenderID, $Message, $Data) {
 		
 			$this->SendDebug("Sender",$SenderID." ".$Message." ".$Data, 0);
 
