@@ -80,12 +80,12 @@ if (!defined('vtBoolean')) {
 				$this->EnableAction("OpenDoor");
 			}
 
-			$CloseVariableID = @IPS_GetObjectIDByIdent('CloseVariable', $this->InstanceID);	
+			$CloseVariableID = @IPS_GetObjectIDByIdent('CloseDoor', $this->InstanceID);	
 			if (IPS_GetObject($CloseVariableID)['ObjectType'] == 2) {
 					$this->RegisterMessage($CloseVariableID, VM_UPDATE);
 			}
 
-			$OpenVariableID = @IPS_GetObjectIDByIdent('OpenVariable', $this->InstanceID);
+			$OpenVariableID = @IPS_GetObjectIDByIdent('OpenDoor', $this->InstanceID);
 			if (IPS_GetObject($OpenVariableID)['ObjectType'] == 2) {
 					$this->RegisterMessage($OpenVariableID, VM_UPDATE);
 			}
