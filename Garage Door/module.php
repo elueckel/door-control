@@ -19,6 +19,15 @@ if (!defined('vtBoolean')) {
 			//Never delete this line!
 			parent::Create();
 
+			if (IPS_VariableProfileExists("GD.DoorStatus") == false) {
+				IPS_CreateVariableProfile("GD.DoorStatus", 1);
+				IPS_SetVariableProfileIcon("GD.DoorStatus", "Door");
+				IPS_SetVariableProfileAssociation("GD.DoorStatus", 0, $this->Translate("Open"), "", -1);
+				IPS_SetVariableProfileAssociation("GD.DoorStatus", 1, $this->Translate("Closed"), "", -1);
+				IPS_SetVariableProfileAssociation("GD.DoorStatus", 5, $this->Translate("Ventilation"), "", -1);
+
+			}
+
 			//$this->RegisterPropertyString("IP","");
 			$this->RegisterPropertyBoolean("Active", 0);
 			$this->RegisterPropertyInteger("GarageDoorVariable", "60");
@@ -37,6 +46,9 @@ if (!defined('vtBoolean')) {
 			
 			$this->RegisterTimer("Garage Door Ventilation",0,"GD_Ventilation(\$_IPS['TARGET']);");
 			$this->RegisterTimer("Garage Door Auto Close",0,"GD_AutoClose(\$_IPS['TARGET']);");
+
+			$this->RegisterVariableInteger($this->Translate('Door Switch','~ShutterMoveStop'));
+			$this->RegisterVariableInteger($this->Translate('Door Status','GD.DoorStatus'));
 
 		}
 
@@ -62,6 +74,9 @@ if (!defined('vtBoolean')) {
 			}
 			if ($this->ReadPropertyBoolean('OpenVariable') == 1) {
 				$this->EnableAction("OpenDoor");
+			}
+			if ($this->ReadPropertyInteger('DoorStatus') == 1) {
+				$this->EnableAction("DoorStatus");
 			} 
 				
 		}
@@ -70,38 +85,83 @@ if (!defined('vtBoolean')) {
 		
 		//$this->SendDebug("Sender",$SenderID." ".$Message." ".$Data, 0);
 
-			if ($SenderID == $this->GetIDForIdent('Active')) {
-				
-				$SenderValue = GetValue($SenderID);
-				if ($SenderValue == 1) {
-					$this->SendDebug("System","Module activated", 0);
-					$TimerMS = $this->ReadPropertyInteger("Timer") * 1000;
-					$this->SetTimerInterval("WLAN BBQ Thermometer",$TimerMS);
-					$this->SetBuffer("UnreachCounter",0);
-					$this->GetReadings();
-				}
-				else {
-					$this->SetTimerInterval("WLAN BBQ Thermometer", "0");
-					$this->ArchiveCleaning();
-					$this->UnsetValuesAtShutdown();
-					$this->SendDebug("System","Switching module off", 0);
-				}
+			if ($SenderID == $this->GetIDForIdent('CloseVariable')) {
+
+				$this-SetBuffer('DoorTargetPosition',1);
+				$this->DoorController();
+				SetValue($SenderID,0); // Taster Emulieren
 			}
-			else {
+
+			if ($SenderID == $this->GetIDForIdent('OpenVariable')) {
+
+				$this-SetBuffer('DoorTargetPosition',0);
+				$this->DoorController();
+				SetValue($SenderID,0); // Taster Emulieren
 				
 			}
-			
+/*
+			if ($SenderID == $this->GetIDForIdent('DoorStatus')) {
+				
+				$CurrentStatus = GetValue($SenderID);
+				$this-SetBuffer('Doorstatus',$CurrentStatus);
+
+			}
+*/			
 
 		}
 
 
 		public function DoorController() {
 
-			//hole wer einen Befehl geschickt hat
-			//prüfe aktuellen Status
-			//prüfe rückkehr
+			$this->SendDebug($this->Translate('Door Controller'),$this->Translate('Controller is evaluating options'),0);
 
+			$DoorTargetPosition = $this->GetBuffer('DoorTargetPosition'); //can be 0 = open, 1 = closed or 5 = ventilation
+			$DoorStatus = GetValue($this->GetIDForIdent('DoorStatus'));
 
+			$this->SendDebug($this->Translate('Door Controller'),$this->Translate('Current Status of door is '.$DoorStatus),0);
+			$this->SendDebug($this->Translate('Door Controller'),$this->Translate('New Status should be '.$DoorTargetPosition),0);
+
+			if ($DoorTargetPosition == 0) {
+
+				if ($DoorStatus == 1) {
+					$this->SendDebug($this->Translate('Door Controller'),$this->Translate('Door was CLOSED and will be OPENED'),0);
+					$this->DoorTrigger();
+				}
+				elseif ($DoorStatus == 5) {
+					$this->SendDebug($this->Translate('Door Controller'),$this->Translate('Door was on ventialation mode and will be OPENED'),0);
+					$this->DoorTrigger();
+				}
+				elseif ($DoorStatus == 0) {
+					$this->SendDebug($this->Translate('Door Controller'),$this->Translate('Door was already OPEN - do nothing'),0);
+				}
+			}
+
+			if ($DoorTargetPosition == 1) {
+
+				if ($DoorStatus == 0) {
+					$this->SendDebug($this->Translate('Door Controller'),$this->Translate('Door was OPEN and will be CLOSED'),0);
+					$this->DoorTrigger();
+				}
+				elseif ($DoorStatus == 5) {
+					$this->SendDebug($this->Translate('Door Controller'),$this->Translate('Door was on ventialation mode and will be CLOSED'),0);
+					$this->DoorTrigger();
+				}
+				elseif ($DoorStatus == 1) {
+					$this->SendDebug($this->Translate('Door Controller'),$this->Translate('Door was already CLOSED - do nothing'),0);
+				}
+			}
+
+		}
+
+		public function DoorTrigger() {
+
+			$DoorSwitch = GetValue($this->ReadPropertyInteger('GarageDoorVariable'));
+
+			$this->SendDebug($this->Translate('Door Trigger'),$this->Translate('The door switch has been triggern and turned on/off'),0);
+
+			RequestAction($DoorSwitch, true);
+			IPS_Sleep(1000);
+			RequestAction($DoorSwitch, false);
 
 		}
 
