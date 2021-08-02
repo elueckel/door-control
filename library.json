@@ -1,0 +1,12 @@
+{
+    "id": "{1A08FC44-DA42-B7B0-BB42-43DB549E52BB}",
+    "name": "Door Control",
+    "author": "elueckel",
+    "url": "https://github.com/elueckel/door-control",
+    "compatibility": {
+        "version": "5.5"
+    },
+    "version": "1.0",
+    "build": 0,
+    "date": 0
+}
