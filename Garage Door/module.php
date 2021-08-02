@@ -30,8 +30,8 @@ if (!defined('vtBoolean')) {
 
 			//$this->RegisterPropertyString("IP","");
 			$this->RegisterPropertyBoolean("Active", 0);
-			$this->RegisterPropertyInteger("GarageDoorVariable", "60");
-			$this->RegisterPropertyInteger("GarageDoorSensor", "60");
+			$this->RegisterPropertyInteger("GarageDoorVariable", 0);
+			$this->RegisterPropertyInteger("GarageDoorSensor", 0);
 			$this->RegisterPropertyBoolean("WriteToLog", 0);
 			$this->RegisterPropertyBoolean("CloseVariable", 0);
 			$this->RegisterPropertyBoolean("OpenVariable", 0);
@@ -71,15 +71,14 @@ if (!defined('vtBoolean')) {
 			//$TimerMS = $this->ReadPropertyInteger("Timer") * 1000;
 			//$this->SetTimerInterval("WLAN BBQ Thermometer",$TimerMS);
 
+			$this->EnableAction("DoorStatus");
+
 			if ($this->ReadPropertyBoolean('CloseVariable') == 1) {
 				$this->EnableAction("CloseDoor");
 			}
 			if ($this->ReadPropertyBoolean('OpenVariable') == 1) {
 				$this->EnableAction("OpenDoor");
 			}
-			if ($this->ReadPropertyInteger('DoorStatus') == 1) {
-				$this->EnableAction("DoorStatus");
-			} 
 				
 		}
 
