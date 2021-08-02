@@ -80,19 +80,19 @@ if (!defined('vtBoolean')) {
 				$this->EnableAction("OpenDoor");
 			}
 
-			$CloseVariable= @IPS_GetObjectIDByIdent('CloseVariable', $this->InstanceID);	
-			if (IPS_GetObject($CloseVariable)['ObjectType'] == 2) {
-					$this->RegisterMessage('CloseVariable', VM_UPDATE);
+			$CloseVariableID = @IPS_GetObjectIDByIdent('CloseVariable', $this->InstanceID);	
+			if (IPS_GetObject($CloseVariableID)['ObjectType'] == 2) {
+					$this->RegisterMessage($CloseVariableID, VM_UPDATE);
 			}
 
-			$OpenVariable= @IPS_GetObjectIDByIdent('OpenVariable', $this->InstanceID);
-			if (IPS_GetObject($OpenVariable)['ObjectType'] == 2) {
-					$this->RegisterMessage('OpenVariable', VM_UPDATE);
+			$OpenVariableID = @IPS_GetObjectIDByIdent('OpenVariable', $this->InstanceID);
+			if (IPS_GetObject($OpenVariableID)['ObjectType'] == 2) {
+					$this->RegisterMessage($OpenVariableID, VM_UPDATE);
 			}
 
-			$DoorSwitch= @IPS_GetObjectIDByIdent('DoorSwitch', $this->InstanceID);
-			if (IPS_GetObject($DoorSwitch)['ObjectType'] == 2) {
-					$this->RegisterMessage('DoorSwitch', VM_UPDATE);
+			$DoorSwitchID = @IPS_GetObjectIDByIdent('DoorSwitch', $this->InstanceID);
+			if (IPS_GetObject($DoorSwitchID)['ObjectType'] == 2) {
+					$this->RegisterMessage($DoorSwitch, VM_UPDATE);
 			}
 				
 		}
