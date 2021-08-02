@@ -99,7 +99,7 @@ if (!defined('vtBoolean')) {
 
 		public function MessageSink($TimeStamp, $SenderID, $Message, $Data) {
 		
-			$this->SendDebug("Sender",$SenderID." ".$Message." ".$Data, 0);
+			$this->SendDebug("Sender",$SenderID, 0);
 
 			if ($SenderID == $this->GetIDForIdent('CloseDoor')) {
 
@@ -120,7 +120,8 @@ if (!defined('vtBoolean')) {
 			if ($SenderID == $this->GetIDForIdent('DoorSwitch')) {
 				
 				$CurrentStatus = GetValue($SenderID);
-				$this-SetBuffer('Doorstatus',$CurrentStatus);
+				$this->SetBuffer('Doorstatus',$CurrentStatus);
+				$this->DoorController();
 
 			}
 		
