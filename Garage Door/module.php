@@ -65,8 +65,8 @@ if (!defined('vtBoolean')) {
 			parent::ApplyChanges();
 
 			$vpos = 100;
-			$this->MaintainVariable('CloseDoor', $this->Translate('Close Door'), vtString, '', $vpos++,$this->ReadPropertyBoolean('CloseVariable') == 1);
-			$this->MaintainVariable('OpenDoor', $this->Translate('Open Door'), vtString, '', $vpos++,$this->ReadPropertyBoolean('OpenVariable') == 1);
+			$this->MaintainVariable('CloseDoor', $this->Translate('Close Door'), vtString, '~Switch', $vpos++,$this->ReadPropertyBoolean('CloseVariable') == 1);
+			$this->MaintainVariable('OpenDoor', $this->Translate('Open Door'), vtString, '~Switch', $vpos++,$this->ReadPropertyBoolean('OpenVariable') == 1);
 			
 			//$TimerMS = $this->ReadPropertyInteger("Timer") * 1000;
 			//$this->SetTimerInterval("WLAN BBQ Thermometer",$TimerMS);
@@ -84,7 +84,7 @@ if (!defined('vtBoolean')) {
 
 		public function MessageSink($TimeStamp, $SenderID, $Message, $Data)	{
 		
-		//$this->SendDebug("Sender",$SenderID." ".$Message." ".$Data, 0);
+		$this->SendDebug("Sender",$SenderID." ".$Message." ".$Data, 0);
 
 			if ($SenderID == $this->GetIDForIdent('CloseVariable')) {
 
