@@ -73,6 +73,7 @@ if (!defined('vtBoolean')) {
 			//$this->SetTimerInterval("WLAN BBQ Thermometer",$TimerMS);
 
 
+			/*
 			if ($this->ReadPropertyBoolean('CloseVariable') == 1) {
 				$this->EnableAction("CloseDoor");
 			}
@@ -90,6 +91,8 @@ if (!defined('vtBoolean')) {
 					$this->RegisterMessage($OpenVariableID, VM_UPDATE);
 			}
 
+			*/
+
 			$DoorSwitchID = @IPS_GetObjectIDByIdent('DoorSwitch', $this->InstanceID);
 			if (IPS_GetObject($DoorSwitchID)['ObjectType'] == 2) {
 					$this->RegisterMessage($DoorSwitchID, VM_UPDATE);
@@ -100,6 +103,8 @@ if (!defined('vtBoolean')) {
 		public function MessageSink($TimeStamp, $SenderID, $Message, $Data) {
 		
 			$this->SendDebug("Sender",$SenderID, 0);
+
+			/*
 
 			if ($SenderID == $this->GetIDForIdent('CloseDoor')) {
 
@@ -116,6 +121,8 @@ if (!defined('vtBoolean')) {
 				$this->DoorController();
 				
 			}
+
+			*/
 
 			if ($SenderID == $this->GetIDForIdent('DoorSwitch')) {
 				
