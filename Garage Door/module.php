@@ -84,7 +84,7 @@ if (!defined('vtBoolean')) {
 
 		public function MessageSink($TimeStamp, $SenderID, $Message, $Data)	{
 		
-		$this->SendDebug("Sender",$SenderID." ".$Message." ".$Data, 0);
+			$this->SendDebug("Sender",$SenderID." ".$Message." ".$Data, 0);
 
 			if ($SenderID == $this->GetIDForIdent('CloseVariable')) {
 
@@ -196,6 +196,12 @@ if (!defined('vtBoolean')) {
 			else {
 				echo $this->Translate('Email Instance is not configured');
 			}
+		}
+
+		public function RequestAction($Ident, $Value) {
+		
+			$this->SetValue($Ident, $Value);
+		
 		}
 
 	}
