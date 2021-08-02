@@ -141,7 +141,8 @@ if (!defined('vtBoolean')) {
 			$this->SendDebug($this->Translate('Door Controller'),$this->Translate('Controller is evaluating options'),0);
 
 			$DoorTargetPosition = $this->GetBuffer('DoorTargetPosition'); //can be 0 = open, 1 = closed or 5 = ventilation
-			$DoorStatus = GetValue($this->GetIDForIdent('DoorStatus'));
+			$DoorStatusID = $this->GetIDForIdent('DoorStatus');
+			$DoorStatus = GetValue($DoorStatusID);
 
 			$this->SendDebug($this->Translate('Door Controller'),$this->Translate('Current Status of door is '.$DoorStatus),0);
 			$this->SendDebug($this->Translate('Door Controller'),$this->Translate('New Status should be '.$DoorTargetPosition),0);
@@ -150,12 +151,12 @@ if (!defined('vtBoolean')) {
 
 				if ($DoorStatus == 1) {
 					$this->SendDebug($this->Translate('Door Controller'),$this->Translate('Door was CLOSED and will be OPENED'),0);
-					SetValue($DoorStatus,0);
+					SetValue($DoorStatusID,0);
 					$this->DoorTrigger();
 				}
 				elseif ($DoorStatus == 5) {
 					$this->SendDebug($this->Translate('Door Controller'),$this->Translate('Door was on ventialation mode and will be OPENED'),0);
-					SetValue($DoorStatus,0);
+					SetValue($DoorStatusID,0);
 					$this->DoorTrigger();
 				}
 				elseif ($DoorStatus == 0) {
@@ -167,12 +168,12 @@ if (!defined('vtBoolean')) {
 
 				if ($DoorStatus == 0) {
 					$this->SendDebug($this->Translate('Door Controller'),$this->Translate('Door was OPEN and will be CLOSED'),0);
-					SetValue($DoorStatus,1);
+					SetValue($DoorStatusID,1);
 					$this->DoorTrigger();
 				}
 				elseif ($DoorStatus == 5) {
 					$this->SendDebug($this->Translate('Door Controller'),$this->Translate('Door was on ventialation mode and will be CLOSED'),0);
-					SetValue($DoorStatus,1);
+					SetValue($DoorStatusID,1);
 					$this->DoorTrigger();
 				}
 				elseif ($DoorStatus == 1) {
