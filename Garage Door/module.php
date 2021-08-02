@@ -47,8 +47,10 @@ if (!defined('vtBoolean')) {
 			$this->RegisterTimer("Garage Door Ventilation",0,"GD_Ventilation(\$_IPS['TARGET']);");
 			$this->RegisterTimer("Garage Door Auto Close",0,"GD_AutoClose(\$_IPS['TARGET']);");
 
-			$this->RegisterVariableInteger('Door Switch','~ShutterMoveStop');
-			$this->RegisterVariableInteger('Door Status','GD.DoorStatus');
+			$i = 10;
+			
+			$this->RegisterVariableInteger('DoorSwitch', $this->Translate('Door Switch'),"~ShutterMoveStop", $i++);	
+			$this->RegisterVariableInteger('DoorStatus', $this->Translate('Door Status'),"~GD.DoorStatus", $i++);	
 
 		}
 
