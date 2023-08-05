@@ -42,3 +42,4 @@ Die Funktion schliest das Tor nach x Minuten. Die Funktion wird im Modul grunds�
 * Zugriff via "Taster" und Homekit
 * Visualisierung der Bewegung des Tors als Status (Keine Bewegung, In Bewegung, Lüften, ...)
 * Unterstützung für das Lüften (nach dem Öffnen wird der Aktor nochmal angesprochen um ein direktes öffnen zu ermöglichen)
+* Unterstützung für automatisches Schließen
