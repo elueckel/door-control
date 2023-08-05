@@ -6,24 +6,42 @@
         },
         {
             "type": "CheckBox",
-            "name": "Active",
-            "caption": "Active"
+            "name": "HomekitSwitchVariable",
+            "caption": "Homekit Switch Variable"
         },
         {
             "type": "SelectVariable",
-            "name": "GarageDoorVariable",
-            "caption": "Target"
+            "name": "GarageDoorActorVariable",
+            "caption": "Garage Door Actor"
         },
         {
             "type": "NumberSpinner",
-            "name": "ReverseTimer",
-            "caption": "Reverse Timer",
-            "suffix": "seconds"
+            "name": "GarageDoorActorTiggerTime",
+            "caption": "Garage Door Actor Trigger Timer",
+            "suffix": "milliseconds",
+            "minimum": "300",
+            "maximum": "1000"
+        },
+        {
+            "type": "NumberSpinner",
+            "name": "GarageDoorTravelTimeUp",
+            "caption": "Travel Timer Open",
+            "suffix": "seconds",
+            "minimum": "10",
+            "maximum": "60"
+        },
+        {
+            "type": "NumberSpinner",
+            "name": "GarageDoorTravelTimeDown",
+            "caption": "Travel Timer Closed",
+            "suffix": "seconds",
+            "minimum": "10",
+            "maximum": "60"
         },
         {
             "type": "SelectVariable",
             "name": "GarageDoorSensor",
-            "caption": "Door Sensor"
+            "caption": "Door Sensor / Light Barrier"
         },
         {
             "type": "CheckBox",
@@ -35,45 +53,29 @@
             "label": "Create Specific Open/Close Variables"
         },
         {
-            "type": "CheckBox",
-            "name": "CloseVariable",
-            "caption": "Close Variable"
-        },
-        {
-            "type": "CheckBox",
-            "name": "OpenVariable",
-            "caption": "Open Variable"
-        },
-        {
             "type": "ExpansionPanel",
             "caption": "Ventilation",
             "items": [
                 {
                     "type": "Label",
-                    "label": "Configuration for automatic closing of garage door"
+                    "label": "Garage Ventilation needs to be triggered in the object tree."
                 },
                 {
                     "type": "CheckBox",
-                    "name": "VentilationActive",
-                    "caption": "Active"
+                    "name": "VentilationManualVariable",
+                    "caption": "Ventilation Active"
                 },
                 {
                     "type": "NumberSpinner",
-                    "name": "VentilationHumidityThreshold",
-                    "caption": "Timeframe for autoclose",
-                    "suffix": "minutes"
+                    "name": "VentilationOpenTimer",
+                    "caption": "Ventilation Open Timer",
+                    "suffix": "seconds"
                 },
                 {
-                    "type": "SelectTime",
-                    "name": "VentilationTimeStart",
-                    "caption": "Start"
-                },
-                {
-                    "type": "SelectTime",
-                    "name": "VentilationTimeStop",
-                    "caption": "Stop"
+                    "type": "CheckBox",
+                    "name": "VentilationReverseToOriginalState",
+                    "caption": "Reverse to original stage"
                 }
-
             ]
         },
         {
@@ -93,13 +95,15 @@
                     "type": "NumberSpinner",
                     "name": "AutoCloseTimer",
                     "caption": "Timeframe for autoclose",
-                    "suffix": "minutes"
+                    "suffix": "minutes",
+                    "minimum": "1",
+                    "maximum": "60"
                 }
             ]
         },
         {
             "type": "ExpansionPanel",
-            "caption": "Notifications",
+            "caption": "Notifications - Not yet active",
             "items": [
                 {
                     "type": "Label",
