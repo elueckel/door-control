@@ -300,7 +300,8 @@ if (!defined('vtBoolean')) {
 			$DoorSwitchRequest = $this->GetBuffer('DoorSwitchRequest');
 			$GarageDoorActor = $this->ReadPropertyInteger('GarageDoorActorVariable');
 			$GarageDoorActorTiggerTime = $this->ReadPropertyInteger('GarageDoorActorTiggerTime');
-			$DoorCurrentOperation = GetValue($this->ReadPropertyInteger('DoorCurrentOperation'));
+			//$DoorCurrentOperation = GetValueInteger($this->ReadPropertyInteger('DoorCurrentOperation'));
+			$DoorCurrentOperation = GetValueInteger(@IPS_GetObjectIDByIdent('DoorCurrentOperation', $this->InstanceID));
 
 			$this->SendDebug($this->Translate('Door Trigger'),$this->Translate('The door switch has been triggered and turned on/off'),0);
 			
@@ -324,7 +325,7 @@ if (!defined('vtBoolean')) {
 					$this->DoorAutoCloseWait();
 				}
 
-			} elseif ($DoorSwitchRequest == "Close") {
+			} elseif ($DoorSwitchRequest == "Close" AND $DoorCurrentOperation == "200") {
 				SetValue(@IPS_GetObjectIDByIdent('DoorCurrentOperation', $this->InstanceID),"201");
 				$this->SendDebug($this->Translate('Door Open Close'),$this->Translate('The door is set to moving to CLOSE position'),0);
 				if ($this->ReadPropertyBoolean("WriteToLog") == true) {
