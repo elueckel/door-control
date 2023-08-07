@@ -305,11 +305,11 @@ if (!defined('vtBoolean')) {
 
 			$this->SendDebug($this->Translate('Door Trigger'),$this->Translate('The door switch has been triggered and turned on/off'),0);
 			
-			//RequestAction($GarageDoorActor, true);
-			SetValueBoolean($GarageDoorActor, true);
+			RequestAction($GarageDoorActor, true);
+			//SetValueBoolean($GarageDoorActor, true);
 			IPS_Sleep($GarageDoorActorTiggerTime);
-			//RequestAction($GarageDoorActor, false);
-			SetValueBoolean($GarageDoorActor, false);
+			RequestAction($GarageDoorActor, false);
+			//SetValueBoolean($GarageDoorActor, false);
 
 			if ($DoorSwitchRequest == "Open") {
 				SetValue(@IPS_GetObjectIDByIdent('DoorCurrentOperation', $this->InstanceID),"202");	
