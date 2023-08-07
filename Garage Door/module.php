@@ -300,6 +300,7 @@ if (!defined('vtBoolean')) {
 			$DoorSwitchRequest = $this->GetBuffer('DoorSwitchRequest');
 			$GarageDoorActor = $this->ReadPropertyInteger('GarageDoorActorVariable');
 			$GarageDoorActorTiggerTime = $this->ReadPropertyInteger('GarageDoorActorTiggerTime');
+			$DoorCurrentOperation = GetValue($this->ReadPropertyInteger('DoorCurrentOperation'));
 
 			$this->SendDebug($this->Translate('Door Trigger'),$this->Translate('The door switch has been triggered and turned on/off'),0);
 			
@@ -332,6 +333,10 @@ if (!defined('vtBoolean')) {
 				$TimerGarageDoorTravelTimeDownMS = $this->ReadPropertyInteger("GarageDoorTravelTimeDown") * 1000;
 				$this->SetTimerInterval("Garage Door - Movement Indicator",$TimerGarageDoorTravelTimeDownMS);
 			}
+			/*
+			if ($DoorCurrentOperation != "200") {
+				$this->SendDebug($this->Translate('Door Open Close'),$this->Translate('Trigger reqeust ignored since door was already moving'),0);
+			}*/
 			
 		}
 
