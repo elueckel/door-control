@@ -61,11 +61,6 @@
                     "label": "Garage Ventilation needs to be triggered in the object tree."
                 },
                 {
-                    "type": "CheckBox",
-                    "name": "VentilationManualVariable",
-                    "caption": "Ventilation Active"
-                },
-                {
                     "type": "NumberSpinner",
                     "name": "VentilationOpenTimer",
                     "caption": "Ventilation Open Timer",
@@ -85,11 +80,6 @@
                 {
                     "type": "Label",
                     "label": "Configuration for automatic closing of garage door"
-                },
-                {
-                    "type": "CheckBox",
-                    "name": "AutoCloseActive",
-                    "caption": "Active"
                 },
                 {
                     "type": "NumberSpinner",

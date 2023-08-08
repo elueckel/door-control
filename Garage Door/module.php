@@ -49,15 +49,15 @@ if (!defined('vtBoolean')) {
 			$this->RegisterPropertyBoolean("Active", 0);
 			$this->RegisterPropertyInteger("GarageDoorActorVariable", false);
 			$this->RegisterPropertyInteger("GarageDoorActorTiggerTime", "500");
-			$this->RegisterPropertyInteger("GarageDoorTravelTimeUp", "30");
-			$this->RegisterPropertyInteger("GarageDoorTravelTimeDown", "30");
+			$this->RegisterPropertyInteger("GarageDoorTravelTimeUp", "20");
+			$this->RegisterPropertyInteger("GarageDoorTravelTimeDown", "20");
 			$this->RegisterPropertyInteger("GarageDoorSensor", 0);
 			$this->RegisterPropertyBoolean("WriteToLog", 0);
 			$this->RegisterPropertyBoolean("HomekitSwitchVariable", 0);
 
 			$this->RegisterPropertyBoolean("VentilationReverseToOriginalState", true);
 			$this->RegisterPropertyInteger("VentilationMode", "0");
-			$this->RegisterPropertyInteger("VentilationOpenTimer", "3");
+			$this->RegisterPropertyInteger("VentilationOpenTimer", "1");
 			$this->RegisterPropertyInteger("VentilationHumidityThreshold", "55");
 			$this->RegisterPropertyInteger("VentilationHumiditySensor",0);
 			$this->RegisterPropertyString('VentilationTimeStart', '{"hour":9, "minute": 0, "second": 0}');
@@ -82,7 +82,21 @@ if (!defined('vtBoolean')) {
 			$this->RegisterVariableInteger('DoorStatus', $this->Translate('Door Status'),"GD.DoorStatus", $i++);
 				SetValue(@IPS_GetObjectIDByIdent('DoorStatus', $this->InstanceID),"104");	
 			$this->RegisterVariableInteger('DoorCurrentOperation', $this->Translate('Door Current Operation'),"GD.DoorOperation", $i++);
-				SetValue(@IPS_GetObjectIDByIdent('DoorCurrentOperation', $this->InstanceID),"200");			
+				SetValue(@IPS_GetObjectIDByIdent('DoorCurrentOperation', $this->InstanceID),"200");		
+				
+			$this->RegisterVariableBoolean('VentilationManual', $this->Translate('Ventilation'),"~Switch", $i++);
+				$this->EnableAction("VentilationManual");
+				$VentilationManualID = @IPS_GetObjectIDByIdent('VentilationManual', $this->InstanceID);
+				if (IPS_GetObject($VentilationManualID)['ObjectType'] == 2) {
+						$this->RegisterMessage($VentilationManualID, VM_UPDATE);
+				}	
+			
+			$this->RegisterVariableBoolean('AutoCloseFunction', $this->Translate('Auto Close Function'),"~Switch", $i++);
+				$this->EnableAction("AutoCloseFunction");
+				$AutoCloseFunctionID = @IPS_GetObjectIDByIdent('AutoCloseFunction', $this->InstanceID);
+				if (IPS_GetObject($AutoCloseFunctionID)['ObjectType'] == 2) {
+						$this->RegisterMessage($AutoCloseFunctionID, VM_UPDATE);
+				}	
 
 		}
 
@@ -98,7 +112,7 @@ if (!defined('vtBoolean')) {
 
 			$vpos = 100;
 
-			$this->MaintainVariable('DoorSwitchHomeKit', $this->Translate('Door Switch Homekit'), vtInteger, '~ShutterMoveStop', $vpos++,$this->ReadPropertyBoolean('HomekitSwitchVariable') == true);
+			$this->MaintainVariable('DoorSwitchHomeKit', $this->Translate('Door Switch Homekit'), vtInteger, '~ShutterMoveStop', 1 ,$this->ReadPropertyBoolean('HomekitSwitchVariable') == true);
 			if ($this->ReadPropertyBoolean('HomekitSwitchVariable') == 1) {
 				$this->EnableAction("DoorSwitchHomeKit");
 				SetValue(@IPS_GetObjectIDByIdent('DoorSwitchHomeKit', $this->InstanceID),"4");
@@ -107,7 +121,7 @@ if (!defined('vtBoolean')) {
 						$this->RegisterMessage($DoorSwitchHomeKitID, VM_UPDATE);
 				}
 			}
-
+			/*
 			$this->MaintainVariable('VentilationManual', $this->Translate('Ventilation'), vtBoolean, '~Switch', $vpos++,$this->ReadPropertyBoolean('VentilationManualVariable') == true);
 			if ($this->ReadPropertyBoolean('VentilationManualVariable') == 1) {
 				$this->EnableAction("VentilationManual");
@@ -127,6 +141,7 @@ if (!defined('vtBoolean')) {
 				}
 				
 			}
+			*/
 
 			$OpenVariableID = @IPS_GetObjectIDByIdent('OpenDoor', $this->InstanceID);
 			if (IPS_GetObject($OpenVariableID)['ObjectType'] == 2) {
