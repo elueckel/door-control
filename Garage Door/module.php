@@ -45,8 +45,6 @@ if (!defined('vtBoolean')) {
 				IPS_SetVariableProfileAssociation("GD.DoorSwitchStandard", 304, $this->Translate("Close"), "", -1);
 			}
 
-			//$this->RegisterPropertyString("IP","");
-			$this->RegisterPropertyBoolean("Active", 0);
 			$this->RegisterPropertyInteger("GarageDoorActorVariable", false);
 			$this->RegisterPropertyInteger("GarageDoorActorTiggerTime", "500");
 			$this->RegisterPropertyInteger("GarageDoorTravelTimeUp", "20");
@@ -80,7 +78,8 @@ if (!defined('vtBoolean')) {
 						$this->RegisterMessage($DoorSwitchButtonID, VM_UPDATE);
 				}
 			$this->RegisterVariableInteger('DoorStatus', $this->Translate('Door Status'),"GD.DoorStatus", $i++);
-				SetValue(@IPS_GetObjectIDByIdent('DoorStatus', $this->InstanceID),"104");	
+				SetValue(@IPS_GetObjectIDByIdent('DoorStatus', $this->InstanceID),"104");
+
 			$this->RegisterVariableInteger('DoorCurrentOperation', $this->Translate('Door Current Operation'),"GD.DoorOperation", $i++);
 				SetValue(@IPS_GetObjectIDByIdent('DoorCurrentOperation', $this->InstanceID),"200");		
 				
@@ -121,28 +120,7 @@ if (!defined('vtBoolean')) {
 						$this->RegisterMessage($DoorSwitchHomeKitID, VM_UPDATE);
 				}
 			}
-			/*
-			$this->MaintainVariable('VentilationManual', $this->Translate('Ventilation'), vtBoolean, '~Switch', $vpos++,$this->ReadPropertyBoolean('VentilationManualVariable') == true);
-			if ($this->ReadPropertyBoolean('VentilationManualVariable') == 1) {
-				$this->EnableAction("VentilationManual");
-				$VentilationManualID = @IPS_GetObjectIDByIdent('VentilationManual', $this->InstanceID);
-				if (IPS_GetObject($VentilationManualID)['ObjectType'] == 2) {
-						$this->RegisterMessage($VentilationManualID, VM_UPDATE);
-				}
-				
-			}
-
-			$this->MaintainVariable('AutoCloseFunction', $this->Translate('Auto Close Function'), vtBoolean, '~Switch', $vpos++,$this->ReadPropertyBoolean('AutoCloseActive') == true);
-			if ($this->ReadPropertyBoolean('AutoCloseActive') == 1) {
-				$this->EnableAction("AutoCloseFunction");
-				$AutoCloseFunctionID = @IPS_GetObjectIDByIdent('AutoCloseFunction', $this->InstanceID);
-				if (IPS_GetObject($AutoCloseFunctionID)['ObjectType'] == 2) {
-						$this->RegisterMessage($AutoCloseFunctionID, VM_UPDATE);
-				}
-				
-			}
-			*/
-
+			
 			$OpenVariableID = @IPS_GetObjectIDByIdent('OpenDoor', $this->InstanceID);
 			if (IPS_GetObject($OpenVariableID)['ObjectType'] == 2) {
 					$this->RegisterMessage($OpenVariableID, VM_UPDATE);
@@ -169,8 +147,10 @@ if (!defined('vtBoolean')) {
 			} else {
 				$AutoCloseFunctionID = "00003";
 			}
+
+			$DoorCurrentOperation = GetValue(@IPS_GetObjectIDByIdent('DoorCurrentOperation', $this->InstanceID));
 			
-			if ($SenderID == $this->GetIDForIdent('DoorSwitchButton') AND (GetValueBoolean(@IPS_GetObjectIDByIdent('DoorSwitchButton', $this->InstanceID)) == true)) {
+			if ($SenderID == $this->GetIDForIdent('DoorSwitchButton') AND (GetValueBoolean(@IPS_GetObjectIDByIdent('DoorSwitchButton', $this->InstanceID)) == true) AND $DoorCurrentOperation == "200") {
 				$this->SendDebug("Door Trigger","", 0);
 				$this->SendDebug("Door Trigger","******************************", 0);
 				$this->SendDebug("Door Trigger","Variable the was triggered: ".(IPS_GetObject($SenderID)["ObjectName"]), 0);
@@ -214,7 +194,7 @@ if (!defined('vtBoolean')) {
 				}
 			}
 
-			if ($SenderID == $DoorSwitchHomeKitID) {
+			if ($SenderID == $DoorSwitchHomeKitID AND $DoorCurrentOperation == "200") {
 				$this->SendDebug("Door Trigger","", 0);
 				$this->SendDebug("Door Trigger","******************************", 0);
 				$this->SendDebug("Door Trigger","Variable the was triggered: ".(IPS_GetObject($SenderID)["ObjectName"]), 0);
@@ -349,10 +329,6 @@ if (!defined('vtBoolean')) {
 				$TimerGarageDoorTravelTimeDownMS = $this->ReadPropertyInteger("GarageDoorTravelTimeDown") * 1000;
 				$this->SetTimerInterval("Garage Door - Movement Indicator",$TimerGarageDoorTravelTimeDownMS);
 			}
-			/*
-			if ($DoorCurrentOperation != "200") {
-				$this->SendDebug($this->Translate('Door Open Close'),$this->Translate('Trigger reqeust ignored since door was already moving'),0);
-			}*/
 			
 		}
 
