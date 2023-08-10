@@ -58,15 +58,18 @@ if (!defined('vtBoolean')) {
 			$this->RegisterPropertyInteger("VentilationOpenTimer", "1");
 			$this->RegisterPropertyInteger("VentilationHumidityThreshold", "55");
 			$this->RegisterPropertyInteger("VentilationHumiditySensor",0);
-			$this->RegisterPropertyString('VentilationTimeStart', '{"hour":9, "minute": 0, "second": 0}');
-			$this->RegisterPropertyString('VentilationTimeStop', '{"hour":18, "minute": 0, "second": 0}');
+			//$this->RegisterPropertyString('VentilationTimeStart', '{"hour":9, "minute": 0, "second": 0}');
+			//$this->RegisterPropertyString('VentilationTimeStop', '{"hour":18, "minute": 0, "second": 0}');
 			$this->RegisterPropertyBoolean("VentilationManualVariable", 0);
 
-			$this->RegisterPropertyBoolean("AutoCloseActive", false);
+			//$this->RegisterPropertyBoolean("AutoCloseActive", false);
 			$this->RegisterPropertyInteger("AutoCloseTimer", "5");
+
+			$this->RegisterPropertyString('AutoCloseAtNightTime', '{"hour":21, "minute": 0, "second": 0}');
 			
 			$this->RegisterTimer("Garage Door - Ventilation Timer",0,"GD_Ventilation(\$_IPS['TARGET']);");
 			$this->RegisterTimer("Garage Door - Auto Close Timer",0,"GD_DoorAutoClose(\$_IPS['TARGET']);");
+			$this->RegisterTimer("Garage Door - Auto Close Night Timer",0,"GD_DoorAutoCloseNight(\$_IPS['TARGET']);");
 			$this->RegisterTimer("Garage Door - Movement Indicator",0,"GD_DoorOpenCloseStopMovement(\$_IPS['TARGET']);");
 
 			$i = 10;
@@ -95,7 +98,14 @@ if (!defined('vtBoolean')) {
 				$AutoCloseFunctionID = @IPS_GetObjectIDByIdent('AutoCloseFunction', $this->InstanceID);
 				if (IPS_GetObject($AutoCloseFunctionID)['ObjectType'] == 2) {
 						$this->RegisterMessage($AutoCloseFunctionID, VM_UPDATE);
-				}	
+				}
+				
+			$this->RegisterVariableBoolean('AutoCloseAtNightTimeActive', $this->Translate('Auto Close At Night'),"~Switch", $i++);
+				$this->EnableAction("AutoCloseAtNightTimeActive");
+				$AutoCloseAtNightTimeActiveID = @IPS_GetObjectIDByIdent('AutoCloseAtNightTimeActive', $this->InstanceID);
+				if (IPS_GetObject($AutoCloseAtNightTimeActiveID)['ObjectType'] == 2) {
+						$this->RegisterMessage($AutoCloseAtNightTimeActiveID, VM_UPDATE);
+				}
 
 		}
 
@@ -124,7 +134,9 @@ if (!defined('vtBoolean')) {
 			$OpenVariableID = @IPS_GetObjectIDByIdent('OpenDoor', $this->InstanceID);
 			if (IPS_GetObject($OpenVariableID)['ObjectType'] == 2) {
 					$this->RegisterMessage($OpenVariableID, VM_UPDATE);
-			}		
+			}
+			
+			$this->AutoCloseAtNightTimer();
 				
 		}
 
@@ -142,11 +154,18 @@ if (!defined('vtBoolean')) {
 				$VentilationManualID = "00002";
 			}
 
-			if ($this->ReadPropertyBoolean('AutoCloseActive') == true) {
+			if (GetValue($this->GetIDForIdent('AutoCloseFunction')) == true) {
 				$AutoCloseFunctionID = $this->GetIDForIdent('AutoCloseFunction');
 			} else {
 				$AutoCloseFunctionID = "00003";
 			}
+			/*
+			if (GetValue($this->GetIDForIdent('AutoCloseAtNightTimeActive')) == true) {
+				$AutoCloseAtNightTimeActiveID = $this->GetIDForIdent('AutoCloseAtNightTimeActive');
+			} else {
+				$AutoCloseAtNightTimeActiveID = "00004";
+			}
+			*/
 
 			$DoorCurrentOperation = GetValue(@IPS_GetObjectIDByIdent('DoorCurrentOperation', $this->InstanceID));
 			
@@ -238,7 +257,40 @@ if (!defined('vtBoolean')) {
 					$this->VentilationDoorOpenClose();	
 				}
 			}
+			//Ab hier weiter - Klasse anlegen / Timer für AutoClose an / aus
+			if ($SenderID == $this->GetIDForIdent('AutoCloseAtNightTimeActive')) {
+				$this->SendDebug("Door Trigger","", 0);
+				$this->SendDebug("Door Trigger","******************************", 0);
+				$this->SendDebug("Door Trigger","Variable the was triggered: ".(IPS_GetObject($SenderID)["ObjectName"]), 0);
+				$this->AutoCloseAtNightTimer();	
+			}
 	
+		}
+
+		public function AutoCloseAtNightTimer() {
+
+			if (GetValueBoolean(@IPS_GetObjectIDByIdent('AutoCloseAtNightTimeActive', $this->InstanceID)) == true) {
+
+				$AutoCloseTimeJson = json_decode($this->ReadPropertyString('AutoCloseAtNightTime'),true);
+				$Hour = $AutoCloseTimeJson["hour"];
+				$Minute = $AutoCloseTimeJson["minute"];
+				$Second = $AutoCloseTimeJson["second"];
+				$now = new DateTime();
+				$target = new DateTime();
+				$target->setTime($Hour,$Minute,$Second); 
+				if ($target < $now) {
+					$target->modify('+1 day');
+				}
+				$target->setTime($Hour,$Minute,$Second);
+				$diff = $target->getTimestamp() - $now->getTimestamp();
+				$Timer = $diff * 1000;
+				$this->SetTimerInterval('Garage Door - Auto Close Night Timer', $Timer);
+				//$this->SendDebug($this->Translate('Auto Close Night Timer'),$this->Translate('Setting Auto Close at Night timer to ').$target,0);	
+			} else if (GetValueBoolean(@IPS_GetObjectIDByIdent('AutoCloseAtNightTimeActive', $this->InstanceID)) == false) {
+				$this->SendDebug($this->Translate('Auto Close Night Timer'),$this->Translate('In-active'),0);
+				$this->SetTimerInterval("Garage Door - Auto Close Night Timer",0);	
+			}
+
 		}
 
 
@@ -409,24 +461,78 @@ if (!defined('vtBoolean')) {
 
 		public function DoorAutoClose() {
 
+			if ($this->ReadPropertyInteger('GarageDoorSensor') !="") {
+				if (GetValue($this->ReadPropertyInteger('GarageDoorSensor')) == false) {
+					$DoorSensorStatus = "Not Blocked";
+				} else {
+					$DoorSensorStatus = "Blocked";
+				}
+			} else {
+				$DoorSensorStatus = "Not Blocked";
+			}
+
 			$this->SendDebug($this->Translate('Door Auto Close'),$this->Translate('Auto Close function is closing door'),0);
 
 			$this->SetTimerInterval("Garage Door - Auto Close Timer",0);
 
 			if ($this->ReadPropertyBoolean('HomekitSwitchVariable') == 1) {
 				$this->SendDebug($this->Translate('Door Auto Close'),$this->Translate('Auto Close is triggering Homekit to close door'),0);
-				SetValue(@IPS_GetObjectIDByIdent('DoorSwitchHomeKit', $this->InstanceID),"4");	
-			}
-			else if ($this->ReadPropertyBoolean('HomekitSwitchVariable') == 0) {
-				$this->SendDebug($this->Translate('Door Auto Close'),$this->Translate('Auto Close is tiggering standard function to close door'),0);
-				if (GetValue($this->ReadPropertyInteger('GarageDoorSensor')) == false AND $this->ReadPropertyInteger('GarageDoorSensor') !="") {
-					$this->SetBuffer('DoorSwitchRequest',"Close");
-					$this->DoorController();
+				if ($DoorSensorStatus == "Not Blocked") {	
+						SetValue(@IPS_GetObjectIDByIdent('DoorSwitchHomeKit', $this->InstanceID),"4");
 				} else {
 					$this->SendDebug($this->Translate('Door Auto Close'),$this->Translate('Trigger requesting to close door, but is blocked due to door sensor'),0);
 				}	
-			}		
-			
+			}
+			else if ($this->ReadPropertyBoolean('HomekitSwitchVariable') == 0) {
+				$this->SendDebug($this->Translate('Door Auto Close'),$this->Translate('Auto Close is tiggering standard function to close door'),0);
+				if ($DoorSensorStatus == "Not Blocked") {	
+						$this->SetBuffer('DoorSwitchRequest',"Close");	
+						$this->DoorController();
+				} else {
+					$this->SendDebug($this->Translate('Door Auto Close'),$this->Translate('Trigger requesting to close door, but is blocked due to door sensor'),0);
+				}
+			}			
+		}
+
+		public function DoorAutoCloseNight() {
+
+			//Check door Sensor if exists and if blocked
+			if ($this->ReadPropertyInteger('GarageDoorSensor') !="") {
+				if (GetValue($this->ReadPropertyInteger('GarageDoorSensor')) == false) {
+					$DoorSensorStatus = "Not Blocked";
+				} else {
+					$DoorSensorStatus = "Blocked";
+				}
+			} else {
+				$DoorSensorStatus = "Not Blocked";
+			}
+
+			$this->SendDebug($this->Translate('Door Auto Close at night'),$this->Translate('Auto Close at night function is closing door'),0);
+
+			if ($this->ReadPropertyBoolean('HomekitSwitchVariable') == 1) {
+				$this->SendDebug($this->Translate('Door Auto Close at night'),$this->Translate('Auto Close at night is triggering Homekit to close door'),0);
+				if ($DoorSensorStatus == "Not Blocked") {
+						if (GetValueBoolean(@IPS_GetObjectIDByIdent('AutoCloseAtNightTimeActive', $this->InstanceID)) == true) {
+							$this->AutoCloseAtNightTimer();
+						}	
+						SetValue(@IPS_GetObjectIDByIdent('DoorSwitchHomeKit', $this->InstanceID),"4");
+				} else {
+					$this->SendDebug($this->Translate('Door Auto Close at night'),$this->Translate('Trigger requesting to close door, but is blocked due to door sensor'),0);
+				}
+			} else if ($this->ReadPropertyBoolean('HomekitSwitchVariable') == 0) {
+				$this->SendDebug($this->Translate('Door Auto Close at night'),$this->Translate('Auto Close at night is tiggering standard function to close door'),0);
+				
+				if ($DoorSensorStatus == "Not Blocked") {
+						if (GetValueBoolean(@IPS_GetObjectIDByIdent('AutoCloseAtNightTimeActive', $this->InstanceID)) == true) {
+							$this->AutoCloseAtNightTimer();
+						}	
+						$this->SetBuffer('DoorSwitchRequest',"Close");	
+						$this->DoorController();
+				} else {
+					$this->SendDebug($this->Translate('Door Auto Close at night'),$this->Translate('Trigger requesting to close door, but is blocked due to door sensor'),0);
+				}
+			}
+				
 		}
 
 		public function NotifyApp() {
