@@ -118,7 +118,7 @@
                 {
                     "type": "SelectTime",
                     "name": "AutoCloseAtNightTime",
-                    "caption": "Auto close at night"
+                    "caption": "Auto close at time"
                 }
             ]
         },

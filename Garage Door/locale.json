@@ -27,7 +27,7 @@
             "Timeframe for autoclose after opening": "Zeit für automatisches Schließen",
             "minutes": "Minuten",
             "Configuration for automatic closing at a certain time, e.g. at night, in case the door is still open. The function needs to be activated in the Object Tree.": "Konfiguration für das automatische Schließen zu einer bestimmten Zeit, z.B. nachts, wenn die Tür noch offen ist. Die Funktion muss im Objektbaum aktiviert werden.",
-            "Auto close at night": "Automatisches Schließen in der Nacht",
+            "Auto close at time": "Automatisches Schließen um Uhrzeit",
             "Notifications - Not yet active": "Benachrichtigungen - Noch nicht aktiv",
             "Open": "Offen",
             "Closed": "Geschlossen",
