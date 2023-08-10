@@ -151,12 +151,13 @@ if (!defined('vtBoolean')) {
 			} else {
 				$DoorSwitchHomeKitID = "00001";
 			}
-
+			/*
 			if (GetValue($this->GetIDForIdent('VentilationManual') == true)) {
 				$VentilationManualID = $this->GetIDForIdent('VentilationManual');
 			} else {
 				$VentilationManualID = "00002";
 			}
+			*/
 
 			if (GetValue($this->GetIDForIdent('AutoCloseFunction')) == true) {
 				$AutoCloseFunctionID = $this->GetIDForIdent('AutoCloseFunction');
