@@ -79,15 +79,24 @@
             "items": [
                 {
                     "type": "Label",
-                    "label": "Configuration for automatic closing of garage door"
+                    "label": "Configuration for automatic closing of garage door after opening"
                 },
                 {
                     "type": "NumberSpinner",
                     "name": "AutoCloseTimer",
-                    "caption": "Timeframe for autoclose",
+                    "caption": "Timeframe for autoclose (0 = off)",
                     "suffix": "minutes",
-                    "minimum": "1",
+                    "minimum": "0",
                     "maximum": "60"
+                },
+                {
+                    "type": "Label",
+                    "label": "Configuration for automatic closing at a certain time in case the door is still open"
+                },
+                {
+                    "type": "SelectTime",
+                    "name": "AutoCloseAtNightTime",
+                    "caption": "Auto close at night"
                 }
             ]
         },
