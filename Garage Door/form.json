@@ -1,13 +1,35 @@
 {
     "elements": [
         {
+            "type": "ExpansionPanel",
+            "caption": "Module Help",
+            "items": [
+                {
+                    "type": "Label",
+                    "label": "This module allows to automate a garage door. The module will therefore provide either a button which can be pressed or a Apple Homekit integration."
+                },
+                {
+                    "type": "Label",
+                    "label": "To configure the module, simply point it to the Actor running being connected to the garage door motor. The module will activate and deactive the actor ot open the door. In case of bad reception, the time between the button presses can be changed."
+                },
+                {
+                    "type": "Label",
+                    "label": "The up and down time is important to be set after measuring since this time is used to evaluate what the door is doing, e.g. opening."
+                },
+                {
+                    "type": "Label",
+                    "label": "For security purposes a light barrier can be used - if this is blocked the door will not close until the blockage is removed."
+                }
+            ]
+        },
+        {
            "type": "Label",
-            "label": "Garage Door Controller Configuration" 
+            "label": "Garage Door Module Configuration" 
         },
         {
             "type": "CheckBox",
             "name": "HomekitSwitchVariable",
-            "caption": "Homekit Switch Variable"
+            "caption": "Homekit Switch Variable (will be added to Object Tree)"
         },
         {
             "type": "SelectVariable",
@@ -41,7 +63,7 @@
         {
             "type": "SelectVariable",
             "name": "GarageDoorSensor",
-            "caption": "Door Sensor / Light Barrier"
+            "caption": "Blockage Sensor / Light Barrier"
         },
         {
             "type": "CheckBox",
@@ -49,16 +71,12 @@
             "caption": "Write status to log"
         },
         {
-            "type": "Label",
-            "label": "Create Specific Open/Close Variables"
-        },
-        {
             "type": "ExpansionPanel",
             "caption": "Ventilation",
             "items": [
                 {
                     "type": "Label",
-                    "label": "Garage Ventilation needs to be triggered in the object tree."
+                    "label": "Garage ventilation is used to open the door a tiny bit to allow for airflow. To allow for direct option, the module will trigger the actor again, to reset the direction. The function needs to be activated in the Object Tree."
                 },
                 {
                     "type": "NumberSpinner",
@@ -69,29 +87,33 @@
                 {
                     "type": "CheckBox",
                     "name": "VentilationReverseToOriginalState",
-                    "caption": "Reverse to original stage"
+                    "caption": "Reverse to original direction"
                 }
             ]
         },
         {
             "type": "ExpansionPanel",
-            "caption": "Auto Close",
+            "caption": "Auto Close Options (post open and at a specific time)",
             "items": [
                 {
                     "type": "Label",
-                    "label": "Configuration for automatic closing of garage door after opening"
+                    "label": "Configuration for automatic closing of the garage door after opening. The function needs to be activated in the Object Tree."
+                },
+                {
+                    "type": "Label",
+                    "label": "IMPORTANT - if a light barrier is used and it is blocked, the door will not Auto Close!"
                 },
                 {
                     "type": "NumberSpinner",
                     "name": "AutoCloseTimer",
-                    "caption": "Timeframe for autoclose (0 = off)",
+                    "caption": "Timeframe for autoclose after opening",
                     "suffix": "minutes",
                     "minimum": "0",
                     "maximum": "60"
                 },
                 {
                     "type": "Label",
-                    "label": "Configuration for automatic closing at a certain time in case the door is still open"
+                    "label": "Configuration for automatic closing at a certain time, e.g. at night, in case the door is still open. The function needs to be activated in the Object Tree."
                 },
                 {
                     "type": "SelectTime",

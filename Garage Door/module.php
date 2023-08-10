@@ -34,7 +34,7 @@ if (!defined('vtBoolean')) {
 				IPS_SetVariableProfileAssociation("GD.DoorOperation", 201, $this->Translate("Closing"), "", -1);
 				IPS_SetVariableProfileAssociation("GD.DoorOperation", 202, $this->Translate("Opening"), "", -1);
 				IPS_SetVariableProfileAssociation("GD.DoorOperation", 203, $this->Translate("Ventilation Opening"), "", -1);
-				IPS_SetVariableProfileAssociation("GD.DoorOperation", 204, $this->Translate("Ventilation Closing Door"), "", -1);
+				IPS_SetVariableProfileAssociation("GD.DoorOperation", 204, $this->Translate("Ventilation Closing"), "", -1);
 				IPS_SetVariableProfileAssociation("GD.DoorOperation", 205, $this->Translate("Ventilation Reversing"), "", -1);
 			}
 
@@ -142,13 +142,17 @@ if (!defined('vtBoolean')) {
 
 		public function MessageSink($TimeStamp, $SenderID, $Message, $Data) {
 
+			$this->SendDebug("Door Trigger","", 0);
+			$this->SendDebug("Door Trigger","******************************", 0);
+			$this->SendDebug("Door Trigger","Variable the was triggered: ".(IPS_GetObject($SenderID)["ObjectName"]), 0);
+
 			if ($this->ReadPropertyBoolean('HomekitSwitchVariable') == true) {
 				$DoorSwitchHomeKitID = $this->GetIDForIdent('DoorSwitchHomeKit');
 			} else {
 				$DoorSwitchHomeKitID = "00001";
 			}
 
-			if ($this->ReadPropertyBoolean('VentilationManualVariable') == true) {
+			if (GetValue($this->GetIDForIdent('VentilationManual') == true)) {
 				$VentilationManualID = $this->GetIDForIdent('VentilationManual');
 			} else {
 				$VentilationManualID = "00002";
@@ -170,9 +174,8 @@ if (!defined('vtBoolean')) {
 			$DoorCurrentOperation = GetValue(@IPS_GetObjectIDByIdent('DoorCurrentOperation', $this->InstanceID));
 			
 			if ($SenderID == $this->GetIDForIdent('DoorSwitchButton') AND (GetValueBoolean(@IPS_GetObjectIDByIdent('DoorSwitchButton', $this->InstanceID)) == true) AND $DoorCurrentOperation == "200") {
-				$this->SendDebug("Door Trigger","", 0);
-				$this->SendDebug("Door Trigger","******************************", 0);
-				$this->SendDebug("Door Trigger","Variable the was triggered: ".(IPS_GetObject($SenderID)["ObjectName"]), 0);
+				
+				$this->SendDebug("Door Trigger","Door Switch Button", 0);
 
 				if (GetValueInteger(@IPS_GetObjectIDByIdent('DoorStatus', $this->InstanceID)) != 100 AND (GetValueBoolean(@IPS_GetObjectIDByIdent('DoorSwitchButton', $this->InstanceID)) == true)) {
 					$this->SendDebug($this->Translate('Door Trigger'),$this->Translate('Button was pressed request to open'),0);
@@ -214,10 +217,9 @@ if (!defined('vtBoolean')) {
 			}
 
 			if ($SenderID == $DoorSwitchHomeKitID AND $DoorCurrentOperation == "200") {
-				$this->SendDebug("Door Trigger","", 0);
-				$this->SendDebug("Door Trigger","******************************", 0);
-				$this->SendDebug("Door Trigger","Variable the was triggered: ".(IPS_GetObject($SenderID)["ObjectName"]), 0);
 
+				$this->SendDebug("Door Trigger","Homekit", 0);
+				
 				if (GetValueInteger(@IPS_GetObjectIDByIdent('DoorStatus', $this->InstanceID)) == 104 AND (GetValueInteger(@IPS_GetObjectIDByIdent('DoorSwitchHomeKit', $this->InstanceID)) == 0)) {
 					$this->SendDebug($this->Translate('Door Trigger'),$this->Translate('Homekit was triggered to OPEN door - this can happen directly or via the button'),0);
 					$this->SetBuffer('DoorSwitchRequest',"Open");
@@ -240,11 +242,10 @@ if (!defined('vtBoolean')) {
 				}
 			}
 			
-			if ($SenderID == $VentilationManualID) {
-				$this->SendDebug("Door Trigger","", 0);
-				$this->SendDebug("Door Trigger","******************************", 0);
-				$this->SendDebug("Door Trigger","Variable the was triggered: ".(IPS_GetObject($SenderID)["ObjectName"]), 0);
-
+			//if ($SenderID == $VentilationManualID) {
+			if ($SenderID == $this->GetIDForIdent('VentilationManual')) {
+				$this->SendDebug("Door Trigger","Ventilation", 0);
+				
 				if (GetValueInteger(@IPS_GetObjectIDByIdent('DoorStatus', $this->InstanceID)) == 104 AND (GetValueBoolean(@IPS_GetObjectIDByIdent('VentilationManual', $this->InstanceID)) == true)) {
 					$this->SendDebug($this->Translate('Ventilation Manual'),$this->Translate('Manual OPENING for ventilation'),0);
 					$this->SetBuffer('DoorVentilationRequest',"Ventilate - Open");
