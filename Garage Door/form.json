@@ -72,6 +72,50 @@
         },
         {
             "type": "ExpansionPanel",
+            "caption": "Tilt & Limit Switches",
+            "items": [
+                {
+                    "type": "Label",
+                    "label": "The module supports the use of limit switches to evaluate the final position of a door. It is possible to have a single component, like a tilt sensor or up to two sensors for up and down position. A missmatch is reported in a variable."
+                },
+                {
+                    "type": "Select",
+                    "name": "PositionSensorUsed",
+                    "caption": "Position Sensor",
+                    "options": [
+                        {
+                            "caption": "Not in use",
+                            "value": 0
+                        },
+                        {
+                            "caption": "Tilt Sensor",
+                            "value": 1
+                        },
+                        {
+                            "caption": "2 Sensors for open and closed",
+                            "value": 2
+                        }
+                    ]
+                },
+                {
+                    "type": "SelectVariable",
+                    "name": "Tiltsensor",
+                    "caption": "Tilt Sensor Variable"
+                },
+                {
+                    "type": "SelectVariable",
+                    "name": "DoorSensorOpen",
+                    "caption": "Position Sensor Open Variable"
+                },
+                {
+                    "type": "SelectVariable",
+                    "name": "DoorSensorClosed",
+                    "caption": "Position Sensor Closed Variable"
+                }
+            ]
+        },
+        {
+            "type": "ExpansionPanel",
             "caption": "Ventilation",
             "items": [
                 {

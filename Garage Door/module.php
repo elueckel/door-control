@@ -53,6 +53,11 @@ if (!defined('vtBoolean')) {
 			$this->RegisterPropertyBoolean("WriteToLog", 0);
 			$this->RegisterPropertyBoolean("HomekitSwitchVariable", 0);
 
+			$this->RegisterPropertyInteger("PositionSensorUsed", 0);
+			$this->RegisterPropertyInteger("Tiltsensor", false);
+			$this->RegisterPropertyInteger("DoorSensorOpen", false);
+			$this->RegisterPropertyInteger("DoorSensorClosed", false);
+
 			$this->RegisterPropertyBoolean("VentilationReverseToOriginalState", true);
 			$this->RegisterPropertyInteger("VentilationMode", "0");
 			$this->RegisterPropertyInteger("VentilationOpenTimer", "1");
@@ -130,6 +135,8 @@ if (!defined('vtBoolean')) {
 						$this->RegisterMessage($DoorSwitchHomeKitID, VM_UPDATE);
 				}
 			}
+
+			$this->MaintainVariable('DoorPositionError', $this->Translate('Door Position Error'), vtBoolean, '~Switch', 200 ,$this->ReadPropertyInteger('PositionSensorUsed') != 0);
 			
 			$OpenVariableID = @IPS_GetObjectIDByIdent('OpenDoor', $this->InstanceID);
 			if (IPS_GetObject($OpenVariableID)['ObjectType'] == 2) {
@@ -373,7 +380,6 @@ if (!defined('vtBoolean')) {
 					$this->SendDebug($this->Translate('Door Trigger'),$this->Translate('Requesting Auto Close'),0);
 					$this->DoorAutoCloseWait();
 				}
-
 			} elseif ($DoorSwitchRequest == "Close" AND $DoorCurrentOperation == "200") {
 				SetValue(@IPS_GetObjectIDByIdent('DoorCurrentOperation', $this->InstanceID),"201");
 				$this->SendDebug($this->Translate('Door Open Close'),$this->Translate('The door is set to moving to CLOSE position'),0);
@@ -446,6 +452,10 @@ if (!defined('vtBoolean')) {
 				$this->SendDebug($this->Translate('Ventilation'),$this->Translate('Restoring Ventilation'),0);
 				$this->SetBuffer('DoorVentilationRequest',"Ventilate - Open");
 				$this->VentilationDoorOpenClose();	
+			}
+
+			if ($this->ReadPropertyInteger('PositionSensorUsed') != 0) {
+				$this->PostionSensors();
 			}
 
 		}
@@ -535,6 +545,74 @@ if (!defined('vtBoolean')) {
 				}
 			}
 				
+		}
+
+		public function PostionSensors() {
+			
+			$DoorStatus = GetValueInteger(@IPS_GetObjectIDByIdent('DoorStatus', $this->InstanceID));
+			$PositionSensorUsed = $this->ReadPropertyInteger('PositionSensorUsed');
+			$Tiltsensor = $this->ReadPropertyInteger('Tiltsensor');
+			$DoorSensorOpen = $this->ReadPropertyInteger('DoorSensorOpen');
+			$DoorSensorClosed = $this->ReadPropertyInteger('DoorSensorClosed');
+
+			if ($PositionSensorUsed == 1) {
+				IPS_Sleep(500);
+				if ($DoorStatus == 100) { //open
+					if ( GetValue($Tiltsensor) == true) {
+						$this->SendDebug($this->Translate('Position Door Sensor'),$this->Translate(' ALL OK - Tiltsensor reports OPEN and position should be OPEN.'),0);
+						SetValue(@IPS_GetObjectIDByIdent('DoorPositionError', $this->InstanceID),false);
+					} else if ( GetValue($Tiltsensor) == false) {
+						$this->SendDebug($this->Translate('Position Door Sensor'),$this->Translate('ERROR - Tiltsensor reports CLOSED and position should be OPEN.'),0);
+						SetValue(@IPS_GetObjectIDByIdent('DoorPositionError', $this->InstanceID),true);
+					} 
+				} else if ($DoorStatus == 110) { //ventilation - sensor reports open
+					if ( GetValue($Tiltsensor) == true) {
+						$this->SendDebug($this->Translate('Position Door Sensor'),$this->Translate(' ALL OK - Tiltsensor reports OPEN and position should be VENTILATION.'),0);
+						SetValue(@IPS_GetObjectIDByIdent('DoorPositionError', $this->InstanceID),false);
+					} else if ( GetValue($Tiltsensor) == false) {
+						$this->SendDebug($this->Translate('Position Door Sensor'),$this->Translate('ERROR - Tiltsensor reports CLOSED and position should be VENTILATION.'),0);
+						SetValue(@IPS_GetObjectIDByIdent('DoorPositionError', $this->InstanceID),true);
+					} 
+				} else if ($DoorStatus == 104) {
+					if ( GetValue($Tiltsensor) == false) {
+						$this->SendDebug($this->Translate('Position Door Sensor'),$this->Translate(' ALL OK - Tiltsensor reports CLOSED and position should be CLOSED.'),0);
+						SetValue(@IPS_GetObjectIDByIdent('DoorPositionError', $this->InstanceID),false);
+					} else if ( GetValue($Tiltsensor) == true) {
+						$this->SendDebug($this->Translate('Position Door Sensor'),$this->Translate('ERROR - Tiltsensor reports OPEN and position should be CLOSED.'),0);
+						SetValue(@IPS_GetObjectIDByIdent('DoorPositionError', $this->InstanceID),true);
+					} 
+				}
+			} else if ($PositionSensorUsed == 2) {
+				ips_sleep(500);
+				if ($DoorStatus == 100) { //open
+					if ( GetValue($DoorSensorOpen) == true) {
+						$this->SendDebug($this->Translate('Position Door Sensor'),$this->Translate('ALL OK - Sensor Open is true (OPEN) and position should be OPEN.'),0);
+						SetValue(@IPS_GetObjectIDByIdent('DoorPositionError', $this->InstanceID),false);
+					} else if ( GetValue($DoorSensorOpen) == false) {
+						$this->SendDebug($this->Translate('Position Door Sensor'),$this->Translate('ERROR -  Sensor Open is false (door is NOT OPEN) and position should be OPEN.'),0);
+						SetValue(@IPS_GetObjectIDByIdent('DoorPositionError', $this->InstanceID),true);
+					} 
+				} else if ($DoorStatus == 110) { //ventilation - sensor reports open
+					$this->SendDebug($this->Translate('Position Door Sensor'),$this->Translate('VENTILATION is currently not supported'),0);
+					/*
+					if ( GetValue($DoorSensorOpen) == true) {
+						$this->SendDebug($this->Translate('Position Door Sensor'),$this->Translate('ALL OK - Sensor Open is false and position should be VENTILATION.'),0);
+					} else if ( GetValue($DoorSensorOpen) == false) {
+						$this->SendDebug($this->Translate('Position Door Sensor'),$this->Translate('ERROR - Tiltsensor reports CLOSED and position should be VENTILATION.'),0);
+					} */
+				} else if ($DoorStatus == 104) {
+					if ( GetValue($DoorSensorClosed) == true) {
+						$this->SendDebug($this->Translate('Position Door Sensor'),$this->Translate('ALL OK - Sensor Closed is true (CLOSED) and position should be CLOSED.'),0);
+						SetValue(@IPS_GetObjectIDByIdent('DoorPositionError', $this->InstanceID),false);
+					} else if ( GetValue($DoorSensorClosed) == false) {
+						$this->SendDebug($this->Translate('Position Door Sensor'),$this->Translate('ERROR - Sensor Closed is false (door is NOT CLOSED) and position should be CLOSED.'),0);
+						SetValue(@IPS_GetObjectIDByIdent('DoorPositionError', $this->InstanceID),true);
+					} 
+				}
+			} else if ($PositionSensorUsed == 0) {
+				$this->SendDebug($this->Translate('Position Door Sensor'),$this->Translate('Not configured or activated.'),0);
+			}
+		
 		}
 
 		public function NotifyApp() {

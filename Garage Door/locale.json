@@ -42,7 +42,17 @@
             "Door Current Operation": "Tor aktueller Zustand",
             "Auto Close Function": "Automatisches Schließen nach Öffnen",
             "Auto Close At Night": "Automatisches Schließen bei Nacht",
-            "Door Switch Homekit": "Homekit Integration"
+            "Door Switch Homekit": "Homekit Integration",
+            "Door Position Error": "Tor Positionsfehler",
+            "The module supports the use of limit switches to evaluate the final position of a door. It is possible to have a single component, like a tilt sensor or up to two sensors for up and down position. A missmatch is reported in a variable.": "Das Modul unterstützt den Einsatz von Endschaltern zur Auswertung der Position eines Tores. Es ist möglich, eine einzelne Komponente wie einen Kippsensor oder bis zu zwei Sensoren für die Auf- und Abwärtsposition zu verwenden. Ein Fehler wird in einer Variable ausgegeben.",
+            "Position Sensor": "Positionssensor",
+            "Not in use": "Keiner",
+            "Tilt Sensor": "Neigungssensor",
+            "2 Sensors for open and closed": "2 Sensoren für Auf und Zu",
+            "Tilt Sensor Variable": "Neigungssensor Variable",
+            "Position Sensor Open Variable": "Endlagesensor Oben Variable",
+            "Position Sensor Closed Variable": "Endlagesensor Zu Variable",
+            "Tilt & Limit Switches": "Neigungs & Endlagesensoren"
         }
     }
 }

@@ -48,3 +48,8 @@ Die Funktion schliest das Tor um eine definerte Uhrzeit, z.B. in der Nacht. Die 
 * Unterstützung für automatisches Schließen nach X-Minuten
 * Unterstützung für automatisches Schließen um Y-Uhr (z.B. in der Nacht)
 * Unterstützung für eine Lichtschranke um eine Blockade "im" Tor zu erkennen
+
+1.1 - 19-08-2023
+* Neigungssensor wird unterstützt
+* Endlagesensor Oben / Unten wird untersetzt
+* Bei Fehler bei Neigung/Endlage wird die Variable Positionsfehler auf True gesetzt
