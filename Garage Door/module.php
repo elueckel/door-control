@@ -81,33 +81,34 @@ if (!defined('vtBoolean')) {
 
 			$this->RegisterVariableBoolean('DoorSwitchButton', $this->Translate('Door Switch Button'),"~Switch", $i++);
 				$this->EnableAction("DoorSwitchButton");
-				$DoorSwitchButtonID = @IPS_GetObjectIDByIdent('DoorSwitchButton', $this->InstanceID);	
+				$DoorSwitchButtonID = $this->GetIDForIdent('DoorSwitchButton');	
 				if (IPS_GetObject($DoorSwitchButtonID)['ObjectType'] == 2) {
 						$this->RegisterMessage($DoorSwitchButtonID, VM_UPDATE);
 				}
 			$this->RegisterVariableInteger('DoorStatus', $this->Translate('Door Status'),"GD.DoorStatus", $i++);
-				SetValue(@IPS_GetObjectIDByIdent('DoorStatus', $this->InstanceID),"104");
+				$this->SetValue('DoorStatus',"104");
 
 			$this->RegisterVariableInteger('DoorCurrentOperation', $this->Translate('Door Current Operation'),"GD.DoorOperation", $i++);
-				SetValue(@IPS_GetObjectIDByIdent('DoorCurrentOperation', $this->InstanceID),"200");		
+				$this->SetValue('DoorCurrentOperation',"200");				
 				
 			$this->RegisterVariableBoolean('VentilationManual', $this->Translate('Ventilation'),"~Switch", $i++);
 				$this->EnableAction("VentilationManual");
-				$VentilationManualID = @IPS_GetObjectIDByIdent('VentilationManual', $this->InstanceID);
+				$VentilationManualID = $this->GetIDForIdent('VentilationManual');
 				if (IPS_GetObject($VentilationManualID)['ObjectType'] == 2) {
 						$this->RegisterMessage($VentilationManualID, VM_UPDATE);
 				}	
 			
 			$this->RegisterVariableBoolean('AutoCloseFunction', $this->Translate('Auto Close Function'),"~Switch", $i++);
 				$this->EnableAction("AutoCloseFunction");
-				$AutoCloseFunctionID = @IPS_GetObjectIDByIdent('AutoCloseFunction', $this->InstanceID);
+				$AutoCloseFunctionID = $this->GetIDForIdent('AutoCloseFunction');
+
 				if (IPS_GetObject($AutoCloseFunctionID)['ObjectType'] == 2) {
 						$this->RegisterMessage($AutoCloseFunctionID, VM_UPDATE);
 				}
 				
 			$this->RegisterVariableBoolean('AutoCloseAtNightTimeActive', $this->Translate('Auto Close At Night'),"~Switch", $i++);
 				$this->EnableAction("AutoCloseAtNightTimeActive");
-				$AutoCloseAtNightTimeActiveID = @IPS_GetObjectIDByIdent('AutoCloseAtNightTimeActive', $this->InstanceID);
+				$AutoCloseAtNightTimeActiveID = $this->GetIDForIdent('AutoCloseAtNightTimeActive');
 				if (IPS_GetObject($AutoCloseAtNightTimeActiveID)['ObjectType'] == 2) {
 						$this->RegisterMessage($AutoCloseAtNightTimeActiveID, VM_UPDATE);
 				}
@@ -129,19 +130,21 @@ if (!defined('vtBoolean')) {
 			$this->MaintainVariable('DoorSwitchHomeKit', $this->Translate('Door Switch Homekit'), vtInteger, '~ShutterMoveStop', 1 ,$this->ReadPropertyBoolean('HomekitSwitchVariable') == true);
 			if ($this->ReadPropertyBoolean('HomekitSwitchVariable') == 1) {
 				$this->EnableAction("DoorSwitchHomeKit");
-				SetValue(@IPS_GetObjectIDByIdent('DoorSwitchHomeKit', $this->InstanceID),"4");
-				$DoorSwitchHomeKitID = @IPS_GetObjectIDByIdent('DoorSwitchHomeKit', $this->InstanceID);
+				$this->SetValue('DoorSwitchHomeKit',"4");
+				$DoorSwitchHomeKitID = $this->GetIDForIdent('DoorSwitchHomeKit');
 				if (IPS_GetObject($DoorSwitchHomeKitID)['ObjectType'] == 2) {
 						$this->RegisterMessage($DoorSwitchHomeKitID, VM_UPDATE);
 				}
 			}
 
 			$this->MaintainVariable('DoorPositionError', $this->Translate('Door Position Error'), vtBoolean, '~Switch', 200 ,$this->ReadPropertyInteger('PositionSensorUsed') != 0);
-			
-			$OpenVariableID = @IPS_GetObjectIDByIdent('OpenDoor', $this->InstanceID);
+			/*
+			//$OpenVariableID = @IPS_GetObjectIDByIdent('OpenDoor', $this->InstanceID);
+			$OpenVariableID = $this->GetIDForIdent('OpenDoor');
 			if (IPS_GetObject($OpenVariableID)['ObjectType'] == 2) {
 					$this->RegisterMessage($OpenVariableID, VM_UPDATE);
 			}
+			*/
 			
 			$this->AutoCloseAtNightTimer();
 				
@@ -179,18 +182,18 @@ if (!defined('vtBoolean')) {
 			}
 			*/
 
-			$DoorCurrentOperation = GetValue(@IPS_GetObjectIDByIdent('DoorCurrentOperation', $this->InstanceID));
-			
-			if ($SenderID == $this->GetIDForIdent('DoorSwitchButton') AND (GetValueBoolean(@IPS_GetObjectIDByIdent('DoorSwitchButton', $this->InstanceID)) == true) AND $DoorCurrentOperation == "200") {
+			$DoorCurrentOperation = GetValue($this->GetIDForIdent('DoorCurrentOperation'));
+
+			if ($SenderID == $this->GetIDForIdent('DoorSwitchButton') AND (GetValueBoolean($this->GetIDForIdent('DoorSwitchButton')) == true) AND $DoorCurrentOperation == "200") {
 				
 				$this->SendDebug("Door Trigger","Door Switch Button", 0);
 
-				if (GetValueInteger(@IPS_GetObjectIDByIdent('DoorStatus', $this->InstanceID)) != 100 AND (GetValueBoolean(@IPS_GetObjectIDByIdent('DoorSwitchButton', $this->InstanceID)) == true)) {
+				if (GetValueInteger($this->GetIDForIdent('DoorStatus')) != 100 AND (GetValueBoolean($this->GetIDForIdent('DoorSwitchButton')) == true)) {
 					$this->SendDebug($this->Translate('Door Trigger'),$this->Translate('Button was pressed request to open'),0);
-					SetValueBoolean(@IPS_GetObjectIDByIdent('DoorSwitchButton', $this->InstanceID),0); 
+					$this->SetValue('DoorSwitchButton',false); 
 					if ($this->ReadPropertyBoolean('HomekitSwitchVariable') == 1) {
 						$this->SendDebug($this->Translate('Door Trigger'),$this->Translate('Homekit is active and therefore triggered'),0);
-						SetValue(@IPS_GetObjectIDByIdent('DoorSwitchHomeKit', $this->InstanceID),"0");	
+						$this->SetValue('DoorSwitchHomeKit',"0");	
 					}
 					else if ($this->ReadPropertyBoolean('HomekitSwitchVariable') == 0) {
 						$this->SendDebug($this->Translate('Door Trigger'),$this->Translate('Button will trigger door'),0);
@@ -200,12 +203,12 @@ if (!defined('vtBoolean')) {
 					
 				}
 
-				if (GetValueInteger(@IPS_GetObjectIDByIdent('DoorStatus', $this->InstanceID)) == 100  AND (GetValueBoolean(@IPS_GetObjectIDByIdent('DoorSwitchButton', $this->InstanceID)) == true)) {
+				if (GetValueInteger($this->GetIDForIdent('DoorStatus')) == 100  AND (GetValueBoolean($this->GetIDForIdent('DoorSwitchButton')) == true)) {
 					$this->SendDebug($this->Translate('Door Trigger'),$this->Translate('Button was pressed request to close'),0);
-					SetValueBoolean(@IPS_GetObjectIDByIdent('DoorSwitchButton', $this->InstanceID),0);
+					$this->SetValue('DoorSwitchButton',false);
 					if ($this->ReadPropertyBoolean('HomekitSwitchVariable') == 1) {
 						$this->SendDebug($this->Translate('Door Trigger'),$this->Translate('Homekit is active and therefore triggered'),0);
-						SetValue(@IPS_GetObjectIDByIdent('DoorSwitchHomeKit', $this->InstanceID),"4");	
+						$this->SetValue('DoorSwitchHomeKit',"4");	
 					}
 					else if ($this->ReadPropertyBoolean('HomekitSwitchVariable') == 0) {
 						$this->SendDebug($this->Translate('Door Trigger'),$this->Translate('Button will trigger door'),0);
@@ -228,13 +231,13 @@ if (!defined('vtBoolean')) {
 
 				$this->SendDebug("Door Trigger","Homekit", 0);
 				
-				if (GetValueInteger(@IPS_GetObjectIDByIdent('DoorStatus', $this->InstanceID)) == 104 AND (GetValueInteger(@IPS_GetObjectIDByIdent('DoorSwitchHomeKit', $this->InstanceID)) == 0)) {
+				if (GetValueInteger($this->GetIDForIdent('DoorStatus')) == 104 AND (GetValueInteger(@$this->GetIDForIdent('DoorSwitchHomeKit')) == 0)) {
 					$this->SendDebug($this->Translate('Door Trigger'),$this->Translate('Homekit was triggered to OPEN door - this can happen directly or via the button'),0);
 					$this->SetBuffer('DoorSwitchRequest',"Open");
 					$this->DoorController();		
 				}
 
-				if (GetValueInteger(@IPS_GetObjectIDByIdent('DoorStatus', $this->InstanceID)) == 100 AND (GetValueInteger(@IPS_GetObjectIDByIdent('DoorSwitchHomeKit', $this->InstanceID)) == 4)) {
+				if (GetValueInteger($this->GetIDForIdent('DoorStatus')) == 100 AND (GetValueInteger($this->GetIDForIdent('DoorSwitchHomeKit')) == 4)) {
 					$this->SendDebug($this->Translate('Door Trigger'),$this->Translate('Homekit was triggered to CLOSE door - this can happen directly or via the button'),0);
 					if ($this->ReadPropertyInteger('GarageDoorSensor') !="") {
 						if (GetValue($this->ReadPropertyInteger('GarageDoorSensor')) == false) {
@@ -250,17 +253,16 @@ if (!defined('vtBoolean')) {
 				}
 			}
 			
-			//if ($SenderID == $VentilationManualID) {
 			if ($SenderID == $this->GetIDForIdent('VentilationManual')) {
 				$this->SendDebug("Door Trigger","Ventilation", 0);
 				
-				if (GetValueInteger(@IPS_GetObjectIDByIdent('DoorStatus', $this->InstanceID)) == 104 AND (GetValueBoolean(@IPS_GetObjectIDByIdent('VentilationManual', $this->InstanceID)) == true)) {
+				if (GetValueInteger(@$this->GetIDForIdent('DoorStatus')) == 104 AND (GetValueBoolean($this->GetIDForIdent('VentilationManual')) == true)) {
 					$this->SendDebug($this->Translate('Ventilation Manual'),$this->Translate('Manual OPENING for ventilation'),0);
 					$this->SetBuffer('DoorVentilationRequest',"Ventilate - Open");
 					$this->VentilationDoorOpenClose();		
 				}
 
-				if (GetValueInteger(@IPS_GetObjectIDByIdent('DoorStatus', $this->InstanceID)) == 110 AND (GetValueBoolean(@IPS_GetObjectIDByIdent('VentilationManual', $this->InstanceID)) == false)) {
+				if (GetValueInteger($this->GetIDForIdent('DoorStatus')) == 110 AND (GetValueBoolean($this->GetIDForIdent('VentilationManual')) == false)) {
 					$this->SendDebug($this->Translate('Ventilation Manual'),$this->Translate('Manual OPENING ending ventilation'),0);
 					$this->SetBuffer('DoorVentilationRequest',"Ventilate - Close");
 					$this->VentilationDoorOpenClose();	
@@ -278,7 +280,7 @@ if (!defined('vtBoolean')) {
 
 		public function AutoCloseAtNightTimer() {
 
-			if (GetValueBoolean(@IPS_GetObjectIDByIdent('AutoCloseAtNightTimeActive', $this->InstanceID)) == true) {
+			if (GetValueBoolean($this->GetIDForIdent('AutoCloseAtNightTimeActive')) == true) {
 
 				$AutoCloseTimeJson = json_decode($this->ReadPropertyString('AutoCloseAtNightTime'),true);
 				$Hour = $AutoCloseTimeJson["hour"];
@@ -294,8 +296,7 @@ if (!defined('vtBoolean')) {
 				$diff = $target->getTimestamp() - $now->getTimestamp();
 				$Timer = $diff * 1000;
 				$this->SetTimerInterval('Garage Door - Auto Close Night Timer', $Timer);
-				//$this->SendDebug($this->Translate('Auto Close Night Timer'),$this->Translate('Setting Auto Close at Night timer to ').$target,0);	
-			} else if (GetValueBoolean(@IPS_GetObjectIDByIdent('AutoCloseAtNightTimeActive', $this->InstanceID)) == false) {
+			} else if (GetValueBoolean($this->GetIDForIdent('AutoCloseAtNightTimeActive')) == false) {
 				$this->SendDebug($this->Translate('Auto Close Night Timer'),$this->Translate('In-active'),0);
 				$this->SetTimerInterval("Garage Door - Auto Close Night Timer",0);	
 			}
@@ -309,7 +310,7 @@ if (!defined('vtBoolean')) {
 
 			$DoorSwitchRequest = $this->GetBuffer('DoorSwitchRequest'); 
 			$DoorStatus = GetValue($this->GetIDForIdent('DoorStatus'));
-			$DoorStatusID = @IPS_GetObjectIDByIdent('DoorStatus', $this->InstanceID);
+			$DoorStatusID = $this->GetIDForIdent('DoorStatus');
 
 			$this->SendDebug($this->Translate('Door Controller'),$this->Translate('Current Status of door is '.$DoorStatus),0);
 			$this->SendDebug($this->Translate('Door Controller'),$this->Translate('New Door Position Request '.$DoorSwitchRequest),0);
@@ -336,12 +337,12 @@ if (!defined('vtBoolean')) {
 
 				if ($DoorStatus == "100") {
 					$this->SendDebug($this->Translate('Door Controller'),$this->Translate('Door was OPEN and will be CLOSED'),0);
-					SetValue($DoorStatusID,"104");
+					$this->SetValue('DoorStatus',"104");
 					$this->DoorOpenClose();
 				}
 				elseif ($DoorStatus == "110") {
 					$this->SendDebug($this->Translate('Door Controller'),$this->Translate('Door was on ventialation mode and will be CLOSED'),0);
-					SetValue($DoorStatusID,"104");
+					$this->SetValue('DoorStatus',"104");
 					$this->DoorOpenClose();
 				}
 				elseif ($DoorStatus == "104") {
@@ -357,7 +358,7 @@ if (!defined('vtBoolean')) {
 			$GarageDoorActor = $this->ReadPropertyInteger('GarageDoorActorVariable');
 			$GarageDoorActorTiggerTime = $this->ReadPropertyInteger('GarageDoorActorTiggerTime');
 			//$DoorCurrentOperation = GetValueInteger($this->ReadPropertyInteger('DoorCurrentOperation'));
-			$DoorCurrentOperation = GetValueInteger(@IPS_GetObjectIDByIdent('DoorCurrentOperation', $this->InstanceID));
+			$DoorCurrentOperation = GetValueInteger($this->GetIDForIdent('DoorCurrentOperation'));
 
 			$this->SendDebug($this->Translate('Door Trigger'),$this->Translate('The door switch has been triggered and turned on/off'),0);
 			
@@ -368,10 +369,10 @@ if (!defined('vtBoolean')) {
 			//SetValueBoolean($GarageDoorActor, false);
 
 			if ($DoorSwitchRequest == "Open") {
-				SetValue(@IPS_GetObjectIDByIdent('DoorCurrentOperation', $this->InstanceID),"202");	
+				$this->SetValue('DoorCurrentOperation',"202");	
 				$this->SendDebug($this->Translate('Door Open Close'),$this->Translate('The door is set to moving to OPEN position'),0);
 				if ($this->ReadPropertyBoolean("WriteToLog") == true) {
-					IPS_LogMessage($this->Translate('Garage Door'), $this->Translate('Garage is opening'));
+					$this->LogMessage($this->Translate('Garage is opening'), KL_MESSAGE);
 				}
 				$TimerGarageDoorTravelTimeUpMS = $this->ReadPropertyInteger("GarageDoorTravelTimeUp") * 1000;
 				$this->SetTimerInterval("Garage Door - Movement Indicator",$TimerGarageDoorTravelTimeUpMS);
@@ -381,10 +382,10 @@ if (!defined('vtBoolean')) {
 					$this->DoorAutoCloseWait();
 				}
 			} elseif ($DoorSwitchRequest == "Close" AND $DoorCurrentOperation == "200") {
-				SetValue(@IPS_GetObjectIDByIdent('DoorCurrentOperation', $this->InstanceID),"201");
+				$this->SetValue('DoorCurrentOperation',"201");
 				$this->SendDebug($this->Translate('Door Open Close'),$this->Translate('The door is set to moving to CLOSE position'),0);
 				if ($this->ReadPropertyBoolean("WriteToLog") == true) {
-					IPS_LogMessage($this->Translate('Garage Door'), $this->Translate('Garage is closing'));
+					$this->LogMessage($this->Translate('Garage is closing'), KL_MESSAGE);
 				}
 				$TimerGarageDoorTravelTimeDownMS = $this->ReadPropertyInteger("GarageDoorTravelTimeDown") * 1000;
 				$this->SetTimerInterval("Garage Door - Movement Indicator",$TimerGarageDoorTravelTimeDownMS);
@@ -409,7 +410,7 @@ if (!defined('vtBoolean')) {
 			if ($DoorVentilationRequest == "Ventilate - Open") {
 				$this->SendDebug($this->Translate('Ventilation'),$this->Translate('**** Ventilation ****'),0);
 				$this->SendDebug($this->Translate('Ventilation'),$this->Translate('**** Opening ****'),0);
-				SetValue(@IPS_GetObjectIDByIdent('DoorCurrentOperation', $this->InstanceID),"203");
+				$this->SetValue('DoorCurrentOperation',"203");
 				RequestAction($GarageDoorActor, true);
 				IPS_Sleep($GarageDoorActorTiggerTime);
 				RequestAction($GarageDoorActor, false);
@@ -418,17 +419,17 @@ if (!defined('vtBoolean')) {
 				IPS_Sleep($GarageDoorActorTiggerTime);
 				RequestAction($GarageDoorActor, false);
 				$this->SendDebug($this->Translate('Ventilation'),$this->Translate('**** Reversing ****'),0);
-				SetValue(@IPS_GetObjectIDByIdent('DoorCurrentOperation', $this->InstanceID),"205");
-				SetValue($DoorStatus,"100");
+				$this->SetValue('DoorCurrentOperation',"205");
+				$this->SetValue('DoorStatus',"100");
 				RequestAction($GarageDoorActor, true);
 				IPS_Sleep($GarageDoorActorTiggerTime);
 				RequestAction($GarageDoorActor, false);
-				SetValue(@IPS_GetObjectIDByIdent('DoorCurrentOperation', $this->InstanceID),"200");
-				SetValue($this->GetIDForIdent('DoorStatus'),"110");
+				$this->SetValue('DoorCurrentOperation',"200");
+				$this->SetValue('DoorStatus',"110");
 			} else if ($DoorVentilationRequest == "Ventilate - Close") { 
 				$this->SendDebug($this->Translate('Ventilation'),$this->Translate('**** Ventilation ****'),0);
 				$this->SendDebug($this->Translate('Ventilation'),$this->Translate('**** Closing ****'),0);
-				SetValue(@IPS_GetObjectIDByIdent('DoorCurrentOperation', $this->InstanceID),"204");
+				$this->SetValue('DoorCurrentOperation',"204");
 				RequestAction($GarageDoorActor, true);
 				IPS_Sleep($GarageDoorActorTiggerTime);
 				RequestAction($GarageDoorActor, false);
@@ -436,8 +437,8 @@ if (!defined('vtBoolean')) {
 				IPS_Sleep($GarageDoorActorTiggerTime);
 				RequestAction($GarageDoorActor, false);
 				$this->SendDebug($this->Translate('Ventilation'),$this->Translate('**** Closed door ****'),0);
-				SetValue(@IPS_GetObjectIDByIdent('DoorCurrentOperation', $this->InstanceID),"200");
-				SetValue($this->GetIDForIdent('DoorStatus'),"104");
+				$this->SetValue('DoorCurrentOperation',"200");
+				$this->SetValue('DoorStatus',"104");
 			}
 
 		}
@@ -445,10 +446,10 @@ if (!defined('vtBoolean')) {
 		public function DoorOpenCloseStopMovement() {
 
 			$this->SendDebug($this->Translate('Door Open Close'),$this->Translate('The door finished its movement based on the timer setup for moving up or down'),0);
-			SetValue(@IPS_GetObjectIDByIdent('DoorCurrentOperation', $this->InstanceID),"200");	
+			$this->SetValue('DoorCurrentOperation',"200");	
 			$this->SetTimerInterval("Garage Door - Movement Indicator",0);
 
-			if (GetValueBoolean(@IPS_GetObjectIDByIdent('VentilationManual', $this->InstanceID)) == true AND GetValue($this->GetIDForIdent('DoorStatus')) == "104") {
+			if (GetValueBoolean($this->GetIDForIdent('VentilationManual')) == true AND GetValue($this->GetIDForIdent('DoorStatus')) == "104") {
 				$this->SendDebug($this->Translate('Ventilation'),$this->Translate('Restoring Ventilation'),0);
 				$this->SetBuffer('DoorVentilationRequest',"Ventilate - Open");
 				$this->VentilationDoorOpenClose();	
@@ -490,7 +491,7 @@ if (!defined('vtBoolean')) {
 			if ($this->ReadPropertyBoolean('HomekitSwitchVariable') == 1) {
 				$this->SendDebug($this->Translate('Door Auto Close'),$this->Translate('Auto Close is triggering Homekit to close door'),0);
 				if ($DoorSensorStatus == "Not Blocked") {	
-						SetValue(@IPS_GetObjectIDByIdent('DoorSwitchHomeKit', $this->InstanceID),"4");
+						$this->SetValue('DoorSwitchHomeKit',"4");
 				} else {
 					$this->SendDebug($this->Translate('Door Auto Close'),$this->Translate('Trigger requesting to close door, but is blocked due to door sensor'),0);
 				}	
@@ -524,10 +525,10 @@ if (!defined('vtBoolean')) {
 			if ($this->ReadPropertyBoolean('HomekitSwitchVariable') == 1) {
 				$this->SendDebug($this->Translate('Door Auto Close at night'),$this->Translate('Auto Close at night is triggering Homekit to close door'),0);
 				if ($DoorSensorStatus == "Not Blocked") {
-						if (GetValueBoolean(@IPS_GetObjectIDByIdent('AutoCloseAtNightTimeActive', $this->InstanceID)) == true) {
+						if (GetValueBoolean($this->GetIDForIdent('AutoCloseAtNightTimeActive')) == true) {
 							$this->AutoCloseAtNightTimer();
 						}	
-						SetValue(@IPS_GetObjectIDByIdent('DoorSwitchHomeKit', $this->InstanceID),"4");
+						$this->SetValue('DoorSwitchHomeKit',"4");
 				} else {
 					$this->SendDebug($this->Translate('Door Auto Close at night'),$this->Translate('Trigger requesting to close door, but is blocked due to door sensor'),0);
 				}
@@ -535,7 +536,7 @@ if (!defined('vtBoolean')) {
 				$this->SendDebug($this->Translate('Door Auto Close at night'),$this->Translate('Auto Close at night is tiggering standard function to close door'),0);
 				
 				if ($DoorSensorStatus == "Not Blocked") {
-						if (GetValueBoolean(@IPS_GetObjectIDByIdent('AutoCloseAtNightTimeActive', $this->InstanceID)) == true) {
+						if (GetValueBoolean($this->GetIDForIdent('AutoCloseAtNightTimeActive')) == true) {
 							$this->AutoCloseAtNightTimer();
 						}	
 						$this->SetBuffer('DoorSwitchRequest',"Close");	
@@ -549,7 +550,7 @@ if (!defined('vtBoolean')) {
 
 		public function PostionSensors() {
 			
-			$DoorStatus = GetValueInteger(@IPS_GetObjectIDByIdent('DoorStatus', $this->InstanceID));
+			$DoorStatus = GetValueInteger($this->GetIDForIdent('DoorStatus'));
 			$PositionSensorUsed = $this->ReadPropertyInteger('PositionSensorUsed');
 			$Tiltsensor = $this->ReadPropertyInteger('Tiltsensor');
 			$DoorSensorOpen = $this->ReadPropertyInteger('DoorSensorOpen');
@@ -560,26 +561,26 @@ if (!defined('vtBoolean')) {
 				if ($DoorStatus == 100) { //open
 					if ( GetValue($Tiltsensor) == true) {
 						$this->SendDebug($this->Translate('Position Door Sensor'),$this->Translate(' ALL OK - Tiltsensor reports OPEN and position should be OPEN.'),0);
-						SetValue(@IPS_GetObjectIDByIdent('DoorPositionError', $this->InstanceID),false);
+						$this->SetValue('DoorPositionError',false);
 					} else if ( GetValue($Tiltsensor) == false) {
 						$this->SendDebug($this->Translate('Position Door Sensor'),$this->Translate('ERROR - Tiltsensor reports CLOSED and position should be OPEN.'),0);
-						SetValue(@IPS_GetObjectIDByIdent('DoorPositionError', $this->InstanceID),true);
+						$this->SetValue('DoorPositionError',true);
 					} 
 				} else if ($DoorStatus == 110) { //ventilation - sensor reports open
 					if ( GetValue($Tiltsensor) == true) {
 						$this->SendDebug($this->Translate('Position Door Sensor'),$this->Translate(' ALL OK - Tiltsensor reports OPEN and position should be VENTILATION.'),0);
-						SetValue(@IPS_GetObjectIDByIdent('DoorPositionError', $this->InstanceID),false);
+						$this->SetValue('DoorPositionError',false);
 					} else if ( GetValue($Tiltsensor) == false) {
 						$this->SendDebug($this->Translate('Position Door Sensor'),$this->Translate('ERROR - Tiltsensor reports CLOSED and position should be VENTILATION.'),0);
-						SetValue(@IPS_GetObjectIDByIdent('DoorPositionError', $this->InstanceID),true);
+						$this->SetValue('DoorPositionError',true);
 					} 
 				} else if ($DoorStatus == 104) {
 					if ( GetValue($Tiltsensor) == false) {
 						$this->SendDebug($this->Translate('Position Door Sensor'),$this->Translate(' ALL OK - Tiltsensor reports CLOSED and position should be CLOSED.'),0);
-						SetValue(@IPS_GetObjectIDByIdent('DoorPositionError', $this->InstanceID),false);
+						$this->SetValue('DoorPositionError',false);
 					} else if ( GetValue($Tiltsensor) == true) {
 						$this->SendDebug($this->Translate('Position Door Sensor'),$this->Translate('ERROR - Tiltsensor reports OPEN and position should be CLOSED.'),0);
-						SetValue(@IPS_GetObjectIDByIdent('DoorPositionError', $this->InstanceID),true);
+						$this->SetValue('DoorPositionError',true);
 					} 
 				}
 			} else if ($PositionSensorUsed == 2) {
@@ -587,10 +588,10 @@ if (!defined('vtBoolean')) {
 				if ($DoorStatus == 100) { //open
 					if ( GetValue($DoorSensorOpen) == true) {
 						$this->SendDebug($this->Translate('Position Door Sensor'),$this->Translate('ALL OK - Sensor Open is true (OPEN) and position should be OPEN.'),0);
-						SetValue(@IPS_GetObjectIDByIdent('DoorPositionError', $this->InstanceID),false);
+						$this->SetValue('DoorPositionError',false);
 					} else if ( GetValue($DoorSensorOpen) == false) {
 						$this->SendDebug($this->Translate('Position Door Sensor'),$this->Translate('ERROR -  Sensor Open is false (door is NOT OPEN) and position should be OPEN.'),0);
-						SetValue(@IPS_GetObjectIDByIdent('DoorPositionError', $this->InstanceID),true);
+						$this->SetValue('DoorPositionError',true);
 					} 
 				} else if ($DoorStatus == 110) { //ventilation - sensor reports open
 					$this->SendDebug($this->Translate('Position Door Sensor'),$this->Translate('VENTILATION is currently not supported'),0);
@@ -603,10 +604,10 @@ if (!defined('vtBoolean')) {
 				} else if ($DoorStatus == 104) {
 					if ( GetValue($DoorSensorClosed) == true) {
 						$this->SendDebug($this->Translate('Position Door Sensor'),$this->Translate('ALL OK - Sensor Closed is true (CLOSED) and position should be CLOSED.'),0);
-						SetValue(@IPS_GetObjectIDByIdent('DoorPositionError', $this->InstanceID),false);
+						$this->SetValue('DoorPositionError',false);
 					} else if ( GetValue($DoorSensorClosed) == false) {
 						$this->SendDebug($this->Translate('Position Door Sensor'),$this->Translate('ERROR - Sensor Closed is false (door is NOT CLOSED) and position should be CLOSED.'),0);
-						SetValue(@IPS_GetObjectIDByIdent('DoorPositionError', $this->InstanceID),true);
+						$this->SetValue('DoorPositionError',true);
 					} 
 				}
 			} else if ($PositionSensorUsed == 0) {
