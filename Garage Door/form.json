@@ -37,6 +37,11 @@
             "caption": "Garage Door Actor"
         },
         {
+            "type": "CheckBox",
+            "name": "GarageDoorActorTiggerOnOff",
+            "caption": "Aktor Trigger On/Off"
+        },
+        {
             "type": "NumberSpinner",
             "name": "GarageDoorActorTiggerTime",
             "caption": "Garage Door Actor Trigger Timer",

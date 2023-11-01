@@ -11,6 +11,7 @@
             "Homekit Switch Variable (will be added to Object Tree)":"Homekit Variable (wird zum Objektbaum hinzugefügt)",
             "Garage Door Actor":"Garagentor Aktor",
             "Garage Door Actor Trigger Timer": "Garagentor Aktor Auslösezeit",
+            "Aktor Trigger On/Off": "Garagentor Aktor auslösen An/Aus",
             "milliseconds": "Millisekunden",
             "Travel Timer Open": "Zeit für das Öffnen des Tores",
             "Travel Timer Closed": "Zeit für das Schließen des Tores",

@@ -53,3 +53,6 @@ Die Funktion schliest das Tor um eine definerte Uhrzeit, z.B. in der Nacht. Die 
 * Neigungssensor wird unterstützt
 * Endlagesensor Oben / Unten wird untersetzt
 * Bei Fehler bei Neigung/Endlage wird die Variable Positionsfehler auf True gesetzt
+
+1.2 - 01-11-2023
+* Option den Aktor nur auf Ein zu setzen für den Fall das er sich selbst zurück setzt (Standard ist An/Aus)

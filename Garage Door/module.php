@@ -46,6 +46,7 @@ if (!defined('vtBoolean')) {
 			}
 
 			$this->RegisterPropertyInteger("GarageDoorActorVariable", false);
+			$this->RegisterPropertyBoolean("GarageDoorActorTiggerOnOff", true);
 			$this->RegisterPropertyInteger("GarageDoorActorTiggerTime", "500");
 			$this->RegisterPropertyInteger("GarageDoorTravelTimeUp", "20");
 			$this->RegisterPropertyInteger("GarageDoorTravelTimeDown", "20");
@@ -364,10 +365,11 @@ if (!defined('vtBoolean')) {
 			
 			RequestAction($GarageDoorActor, true);
 			//SetValueBoolean($GarageDoorActor, true);
-			IPS_Sleep($GarageDoorActorTiggerTime);
-			RequestAction($GarageDoorActor, false);
-			//SetValueBoolean($GarageDoorActor, false);
-
+			if ($this->ReadPropertyBoolean('GarageDoorActorTiggerOnOff') == true) {
+				IPS_Sleep($GarageDoorActorTiggerTime);
+				RequestAction($GarageDoorActor, false);
+			}
+			
 			if ($DoorSwitchRequest == "Open") {
 				$this->SetValue('DoorCurrentOperation',"202");	
 				$this->SendDebug($this->Translate('Door Open Close'),$this->Translate('The door is set to moving to OPEN position'),0);
@@ -412,18 +414,24 @@ if (!defined('vtBoolean')) {
 				$this->SendDebug($this->Translate('Ventilation'),$this->Translate('**** Opening ****'),0);
 				$this->SetValue('DoorCurrentOperation',"203");
 				RequestAction($GarageDoorActor, true);
-				IPS_Sleep($GarageDoorActorTiggerTime);
-				RequestAction($GarageDoorActor, false);
+				if ($this->ReadPropertyBoolean('GarageDoorActorTiggerOnOff') == true) {
+					IPS_Sleep($GarageDoorActorTiggerTime);
+					RequestAction($GarageDoorActor, false);
+				}
 				IPS_Sleep($VentilationOpenTimer * 1000);
 				RequestAction($GarageDoorActor, true);
-				IPS_Sleep($GarageDoorActorTiggerTime);
-				RequestAction($GarageDoorActor, false);
+				if ($this->ReadPropertyBoolean('GarageDoorActorTiggerOnOff') == true) {
+					IPS_Sleep($GarageDoorActorTiggerTime);
+					RequestAction($GarageDoorActor, false);
+				}
 				$this->SendDebug($this->Translate('Ventilation'),$this->Translate('**** Reversing ****'),0);
 				$this->SetValue('DoorCurrentOperation',"205");
 				$this->SetValue('DoorStatus',"100");
 				RequestAction($GarageDoorActor, true);
-				IPS_Sleep($GarageDoorActorTiggerTime);
-				RequestAction($GarageDoorActor, false);
+				if ($this->ReadPropertyBoolean('GarageDoorActorTiggerOnOff') == true) {
+					IPS_Sleep($GarageDoorActorTiggerTime);
+					RequestAction($GarageDoorActor, false);
+				}
 				$this->SetValue('DoorCurrentOperation',"200");
 				$this->SetValue('DoorStatus',"110");
 			} else if ($DoorVentilationRequest == "Ventilate - Close") { 
@@ -431,11 +439,15 @@ if (!defined('vtBoolean')) {
 				$this->SendDebug($this->Translate('Ventilation'),$this->Translate('**** Closing ****'),0);
 				$this->SetValue('DoorCurrentOperation',"204");
 				RequestAction($GarageDoorActor, true);
-				IPS_Sleep($GarageDoorActorTiggerTime);
-				RequestAction($GarageDoorActor, false);
+				if ($this->ReadPropertyBoolean('GarageDoorActorTiggerOnOff') == true) {
+					IPS_Sleep($GarageDoorActorTiggerTime);
+					RequestAction($GarageDoorActor, false);
+				}
 				RequestAction($GarageDoorActor, true);
-				IPS_Sleep($GarageDoorActorTiggerTime);
-				RequestAction($GarageDoorActor, false);
+				if ($this->ReadPropertyBoolean('GarageDoorActorTiggerOnOff') == true) {
+					IPS_Sleep($GarageDoorActorTiggerTime);
+					RequestAction($GarageDoorActor, false);
+				}
 				$this->SendDebug($this->Translate('Ventilation'),$this->Translate('**** Closed door ****'),0);
 				$this->SetValue('DoorCurrentOperation',"200");
 				$this->SetValue('DoorStatus',"104");
